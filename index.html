@@ -29,6 +29,83 @@
     <div id="board" style="width: 400px; height: 400px;">
         
     </div>
+    
+    <script>
+        let currentGame;
+        let uuid;
+        const socket = io();
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            makeUUID();
+            const gameId = document.getElementById('gameId');
+            const createGame = document.getElementById('createGame');
+            const joinGame = document.getElementById('joinGame');
+            const input = document.getElementById('gameIdInput');
+            const messages = document.getElementById('messages');
+
+            // form.addEventListener('submit', (e) => {
+            //     e.preventDefault();
+            //     if (input.value) {
+            //         socket.emit('chat message', input.value);
+            //         input.value = '';
+            //     }
+            // });
+
+            createGame.addEventListener('click', () => {
+                socket.emit('requestGame', getUUID())
+            })
+
+            joinGame.addEventListener('click', () => {
+                if (input.value != "") {
+                    socket.emit("joinGame", [input.value, getUUID()])
+                    input.value = ""
+                }
+            })
+
+            socket.on('gameId', (msg) => {
+                gameId.innerHTML = "#"+msg
+            })
+
+            socket.on('gameJoinedID', (msg) => {
+                setCurrentGame(msg)
+
+            })
+
+            socket.on('yourGameJoined', (msg) => {
+                if (msg.createdBy == getUUID()) {
+                    console.log(msg)
+                    setCurrentGame(msg)
+                }
+            })
+
+            socket.on('opponentMove2', (move) => {
+                if (move[0].player2 == getUUID()) {
+                    console.log(move[1])
+                    document.getElementById("block-"+move[1]).style.background = "red"
+                }
+            })
+
+            socket.on('opponentMove1', (move) => {
+                if (move[0].player1 == getUUID()) {
+                    console.log(move[1])
+                    document.getElementById("block-"+move[1]).style.background = "red"
+                }
+            })
+
+
+            // socket.on('chat message', (msg) => {
+            //     const item = document.createElement('li');
+            //     item.textContent = msg;
+            //     console.log(msg)
+            //     messages.appendChild(item);
+            //     window.scrollTo(0, document.body.scrollHeight);
+            // }); 
+
+        })
+
+
+    </script>
+
     <script>
 
         const board = document.getElementById('board')
@@ -38,67 +115,42 @@
             for (let i = 0; i < 10; i++) {
                 const row = document.createElement('div')
                 row.style.display = "flex";
+                board.appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
                     const block = document.createElement('div')
                     block.classList.add('block')
                     block.id = "block-"+x
-                    row.appendChild(block)
+                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}' onClick="attack('${x}')"></div>`
                 }
-                board.appendChild(row)
+
             }
         }
 
         createBoard()
 
         function attack(x) {
-            console.log(x)
+            socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
+            document.getElementById("block-"+x).style.background = "blue"
+        }   
+
+        function getUUID() {
+            return uuid;
         }
 
-    </script>
-    <script>
-        const socket = io();
-        const gameId = document.getElementById('gameId');
-        const createGame = document.getElementById('createGame');
-        const joinGame = document.getElementById('joinGame');
-        const input = document.getElementById('gameIdInput');
-        const messages = document.getElementById('messages');
+        function makeUUID() {
+            const UUID = Math.floor(Math.random() * 10000000000)
+            uuid = UUID;
+        }
 
-        // form.addEventListener('submit', (e) => {
-        //     e.preventDefault();
-        //     if (input.value) {
-        //         socket.emit('chat message', input.value);
-        //         input.value = '';
-        //     }
-        // });
+        function setCurrentGame(id) {
+            currentGame = id
+        }
 
-        createGame.addEventListener('click', () => {
-            socket.emit('requestGame')
-        })
+        function getCurrentGame() {
+            return currentGame;
+        }
 
-        joinGame.addEventListener('click', () => {
-            if (input.value != "") {
-                socket.emit("joinGame", input.value)
-                input.value = ""
-            }
-        })
-
-        socket.on('gameId', (msg) => {
-            gameId.innerHTML = "#"+msg
-        })
-
-        socket.on('gameJoinedID', (msg) => {
-            console.log(JSON.parse(msg))
-
-        })
-
-        socket.on('chat message', (msg) => {
-            const item = document.createElement('li');
-            item.textContent = msg;
-            console.log(msg)
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        });
     </script>
 </body>
 </html>
