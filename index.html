@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        .block {
+            border: 1px solid gray;
+            width: 40px;
+            height: 40px;
+        }
+
+        .block:hover {
+            background: rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <p>Create Game</p>
+    <button id="createGame">Create game</button>
+    <h1 id="gameId"></h1>
+    <p>Or Join Game</p>
+    <input placeholder="#xxxxxx" id="gameIdInput">
+    <button id="joinGame">Join game</button>
+    <ul id="messages"></ul>
+    <div id="board" style="width: 400px; height: 400px;">
+        
+    </div>
+    <script>
+
+        const board = document.getElementById('board')
+
+        function createBoard() {
+            let x = 0;
+            for (let i = 0; i < 10; i++) {
+                const row = document.createElement('div')
+                row.style.display = "flex";
+                for (let i = 0; i < 10; i++) {
+                    x++;
+                    const block = document.createElement('div')
+                    block.classList.add('block')
+                    block.id = "block-"+x
+                    row.appendChild(block)
+                }
+                board.appendChild(row)
+            }
+        }
+
+        createBoard()
+
+        function attack(x) {
+            console.log(x)
+        }
+
+    </script>
+    <script>
+        const socket = io();
+        const gameId = document.getElementById('gameId');
+        const createGame = document.getElementById('createGame');
+        const joinGame = document.getElementById('joinGame');
+        const input = document.getElementById('gameIdInput');
+        const messages = document.getElementById('messages');
+
+        // form.addEventListener('submit', (e) => {
+        //     e.preventDefault();
+        //     if (input.value) {
+        //         socket.emit('chat message', input.value);
+        //         input.value = '';
+        //     }
+        // });
+
+        createGame.addEventListener('click', () => {
+            socket.emit('requestGame')
+        })
+
+        joinGame.addEventListener('click', () => {
+            if (input.value != "") {
+                socket.emit("joinGame", input.value)
+                input.value = ""
+            }
+        })
+
+        socket.on('gameId', (msg) => {
+            gameId.innerHTML = "#"+msg
+        })
+
+        socket.on('gameJoinedID', (msg) => {
+            console.log(JSON.parse(msg))
+
+        })
+
+        socket.on('chat message', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            console.log(msg)
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
