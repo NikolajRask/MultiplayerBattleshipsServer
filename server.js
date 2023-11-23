@@ -20,12 +20,13 @@ app.get('/src/app.js', (req, res) => {
   });
 
   io.on('connection', (socket) => {
+    console.log(socket.id)
     socket.on('chat message', (msg) => {
         socket.broadcast.emit('chat message', msg);
         console.log('user: '+msg)
     });
     console.log('a user connected');
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (e) => {
       console.log('user disconnected');
     });
     
@@ -66,6 +67,7 @@ app.get('/src/app.js', (req, res) => {
     socket.on('makeMove', (info) => {
       console.log(info)
       if (info[1] != null) {
+
         fs.readFile('./games.json','utf-8', function (err, data) {
           if (info[1].player1 == info[2]) {
             //change this for a direct message to the user who created the game

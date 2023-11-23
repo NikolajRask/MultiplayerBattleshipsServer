@@ -130,8 +130,10 @@
         createBoard()
 
         function attack(x) {
-            socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
-            document.getElementById("block-"+x).style.background = "blue"
+            if (getCurrentGame() != undefined) {
+                socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
+                document.getElementById("block-"+x).style.background = "blue"
+            }
         }   
 
         function getUUID() {
@@ -149,6 +151,19 @@
 
         function getCurrentGame() {
             return currentGame;
+        }
+
+        function generateRandomShips() {
+            const randomU = Math.floor(Math.random()*100);  
+            placeShip(randomU) 
+        }
+
+        function placeShip(i) {
+            if (i % 10 == 0) {
+                
+            } else {
+
+            }
         }
 
     </script>
