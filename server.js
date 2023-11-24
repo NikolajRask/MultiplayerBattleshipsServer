@@ -8,6 +8,7 @@ const fs = require('fs')
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
+let playersOnline = 0;
   
 fs.writeFile("./games.json", JSON.stringify({games: {}}), (err) => {if (err) throw err})
 
@@ -20,15 +21,23 @@ app.get('/src/app.js', (req, res) => {
   });
 
   io.on('connection', (socket) => {
-    console.log(socket.id)
+    playersOnline++
+    socket.broadcast.emit('playersOnlineUpdate', playersOnline)
+    //console.log(socket.id)
     socket.on('chat message', (msg) => {
         socket.broadcast.emit('chat message', msg);
         console.log('user: '+msg)
     });
     console.log('a user connected');
     socket.on('disconnect', (e) => {
+      playersOnline--
+      socket.broadcast.emit('playersOnlineUpdate', playersOnline)
       console.log('user disconnected');
     });
+
+    socket.on('requestPlayerCount', (uuid) => {
+      socket.broadcast.emit('playersOnlineUpdate', playersOnline)
+    })
     
     socket.on('requestGame', (uuid) => {    
         fs.readFile('./games.json','utf-8', function (err, data) {

@@ -6,6 +6,10 @@
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
+        body {
+            margin: 0px;
+        }
+
         .block {
             border: 1px solid gray;
             width: 40px;
@@ -16,24 +20,62 @@
             background: rgba(0,0,0,0.1);
             cursor: pointer;
         }
+
+        .nav {
+            width: 100%;
+            height: 70px;
+            border-bottom: 1px solid rgb(228, 228, 228);
+        }
+
+        .playersOnline {
+            font-family: Arial, Helvetica, sans-serif;
+            float: right;
+            margin-right: 50px;
+            margin-top: 27px;
+        }
+
+        .icon {
+            margin-left: 50px;
+            position: absolute;
+            margin-top: 23px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 23px;
+
+        }
+        
     </style>
 </head>
 <body>
-    <p>Create Game</p>
-    <button id="createGame">Create game</button>
-    <h1 id="gameId"></h1>
-    <p>Or Join Game</p>
-    <input placeholder="#xxxxxx" id="gameIdInput">
-    <button id="joinGame">Join game</button>
-    <ul id="messages"></ul>
-    <div id="board" style="width: 400px; height: 400px;">
-        
+    <div class="nav">
+        <p id="playerOnline" class="playersOnline"></p>
+        <p class="icon">BattleShips</p>
     </div>
+    <main>
+        <p>Create Game</p>
+        <button id="createGame">Create game</button>
+        <h1 id="gameId"></h1>
+        <p>Or Join Game</p>
+        <input placeholder="#xxxxxx" id="gameIdInput">
+        <button id="joinGame">Join game</button>
+        <ul id="messages"></ul>
+        <div id="board" style="width: 400px; height: 400px;">
+            
+        </div>
+
+    </main>     
     
     <script>
         let currentGame;
         let uuid;
         const socket = io();
+
+        socket.on('playersOnlineUpdate', (playerCount) => {
+                console.log("e")
+                document.getElementById('playerOnline').innerHTML = playerCount + " Players Online"
+        })
+        socket.emit('requestPlayerCount', 0)
+
         document.addEventListener('DOMContentLoaded', () => {
             
             makeUUID();
@@ -50,7 +92,6 @@
             //         input.value = '';
             //     }
             // });
-
             createGame.addEventListener('click', () => {
                 socket.emit('requestGame', getUUID())
             })
