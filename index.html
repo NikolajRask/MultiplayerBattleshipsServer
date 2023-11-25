@@ -21,6 +21,18 @@
             cursor: pointer;
         }
 
+
+        .block-2 {
+            border: 1px solid gray;
+            width: 40px;
+            height: 40px;
+        }
+
+        .block-2:hover {
+            background: rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
         .nav {
             width: 100%;
             height: 70px;
@@ -43,7 +55,53 @@
             font-size: 23px;
 
         }
+
+        .boards {
+            display: flex;
+            width: 1000px;
+            position: absolute;
+            margin-left: -500px;
+            left: 50%;
+            margin-top: 125px;
+        }
+
+        #board {
+        }
+
+        #opponentBoard {
+            margin-left: 200px;
+        }
         
+        .actions {
+            width: 1000px;
+            margin-left: -500px;
+            left: 50%;
+            position: absolute;
+            display: flex;
+        }
+
+        .btn {
+            padding: 10px 20px 10px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            color: white;
+            background: rgb(0, 123, 255);
+            
+        }
+
+        .actionSection {
+            width: 400px;
+            height: 100px;
+        }
+
+        .actionSection:nth-of-type(2) {
+            margin-left: 200px;
+        }
+
     </style>
 </head>
 <body>
@@ -52,17 +110,25 @@
         <p class="icon">BattleShips</p>
     </div>
     <main>
-        <p>Create Game</p>
-        <button id="createGame">Create game</button>
-        <h1 id="gameId"></h1>
-        <p>Or Join Game</p>
-        <input placeholder="#xxxxxx" id="gameIdInput">
-        <button id="joinGame">Join game</button>
         <ul id="messages"></ul>
-        <div id="board" style="width: 400px; height: 400px;">
-            
+        <div class="actions">
+            <div class="actionSection">
+                <button id="createGame" class="btn">Create game</button>
+                <h1 id="gameId"></h1>
+            </div>
+            <div class="actionSection">
+                <input placeholder="#xxxxxx" id="gameIdInput">
+                <button id="joinGame">Join game</button>
+            </div>
         </div>
-
+        <div class="boards">
+            <div id="board" style="width: 400px; height: 400px;">
+                    
+            </div>
+            <div id="opponentBoard" style="width: 400px; height: 400px;">
+                
+            </div>
+        </div>
     </main>     
     
     <script>
@@ -171,9 +237,6 @@
                 board.appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
-                    const block = document.createElement('div')
-                    block.classList.add('block')
-                    block.id = "block-"+x
                     row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}' onClick="attack('${x}')"></div>`
                 }
 
@@ -185,19 +248,18 @@
             for (let i = 0; i < 10; i++) {
                 const row = document.createElement('div')
                 row.style.display = "flex";
-                board.appendChild(row)
+                opponentBoard.appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
-                    const block = document.createElement('div')
-                    block.classList.add('block')
-                    block.id = "block-"+x
-                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}' onClick="attack('${x}')"></div>`
+                    row.innerHTML = row.innerHTML + `<div class='block-2' id='oBlock-${x}' onClick="attack('${x}')"></div>`
                 }
 
             }
         }
 
         createBoard()
+        createOpponentBoard()
+
 
         function attack(x) {
             if (getCurrentGame() != undefined) {
