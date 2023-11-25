@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             margin: 0px;
+            font-family: 'Inter', sans-serif;
         }
 
         .block {
@@ -40,17 +44,15 @@
         }
 
         .playersOnline {
-            font-family: Arial, Helvetica, sans-serif;
             float: right;
             margin-right: 50px;
-            margin-top: 27px;
+            margin-top: 25px;
         }
 
         .icon {
             margin-left: 50px;
             position: absolute;
-            margin-top: 23px;
-            font-family: Arial, Helvetica, sans-serif;
+            margin-top: 21px;
             font-weight: bold;
             font-size: 23px;
 
@@ -90,7 +92,9 @@
             border-radius: 5px;
             color: white;
             background: rgb(0, 123, 255);
-            
+            margin-left: 50%;
+            transform: translateX(-50%);
+            margin-top: 40px;
         }
 
         .actionSection {
@@ -101,6 +105,34 @@
         .actionSection:nth-of-type(2) {
             margin-left: 200px;
         }
+
+        .input {
+            width: 200px;
+            margin: 0px;
+        }
+
+        .joinBtn {
+            margin: 0px;
+        }
+
+        .gameIdContainer {
+            
+        }
+
+        .gameId {
+            text-align: center;
+            margin-top: 39px;
+        }
+
+        #copy-svg {
+            cursor: pointer;
+            margin-top: 7px;
+            margin-left: 10px;
+            width: 26px;
+            height: 26px;
+        }
+
+        #gameIdPlaceholder {position: absolute;opacity: 0;}
 
     </style>
 </head>
@@ -114,11 +146,12 @@
         <div class="actions">
             <div class="actionSection">
                 <button id="createGame" class="btn">Create game</button>
-                <h1 id="gameId"></h1>
+                <h1 id="gameId" class="gameId"></h1>
+                <input id="gameIdPlaceholder"></input>
             </div>
             <div class="actionSection">
-                <input placeholder="#xxxxxx" id="gameIdInput">
-                <button id="joinGame">Join game</button>
+                <input placeholder="#xxxxxx" class="input" id="gameIdInput">
+                <button id="joinGame" class="joinBtn">Join game</button>
             </div>
         </div>
         <div class="boards">
@@ -160,6 +193,8 @@
             // });
             createGame.addEventListener('click', () => {
                 socket.emit('requestGame', [getUUID(), getShips()])
+                document.getElementById("createGame").style.display = "none"
+
             })
 
             joinGame.addEventListener('click', () => {
@@ -170,7 +205,14 @@
             })
 
             socket.on('gameId', (msg) => {
-                gameId.innerHTML = "#"+msg
+                gameId.innerHTML = "#"+msg + `<svg id="copy-svg" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>`
+                document.getElementById('gameIdPlaceholder').value = msg
+
+                document.getElementById('copy-svg').addEventListener('click', () => {
+                    document.getElementById('gameIdPlaceholder').select()
+                    document.getElementById('gameIdPlaceholder').setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(document.getElementById('gameIdPlaceholder').value);
+                })
             })
 
             socket.on('gameJoinedID', (msg) => {
@@ -205,7 +247,7 @@
 
             socket.on('hitTrue', (data) => {
                 if (data[1] == getUUID()) {
-                    document.getElementById("block-"+data[2]).style.background = "orange"
+                    document.getElementById("oBlock-"+data[2]).style.background = "orange"
                 }
             })
 
@@ -237,7 +279,7 @@
                 board.appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
-                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}' onClick="attack('${x}')"></div>`
+                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}'></div>`
                 }
 
             }
@@ -264,7 +306,7 @@
         function attack(x) {
             if (getCurrentGame() != undefined) {
                 socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
-                document.getElementById("block-"+x).style.background = "blue"
+                document.getElementById("oBlock-"+x).style.background = "blue"
             }
         }   
 
