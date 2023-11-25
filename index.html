@@ -93,12 +93,12 @@
             //     }
             // });
             createGame.addEventListener('click', () => {
-                socket.emit('requestGame', getUUID())
+                socket.emit('requestGame', [getUUID(), getShips()])
             })
 
             joinGame.addEventListener('click', () => {
                 if (input.value != "") {
-                    socket.emit("joinGame", [input.value, getUUID()])
+                    socket.emit("joinGame", [input.value, getUUID(), getShips()])
                     input.value = ""
                 }
             })
@@ -113,23 +113,33 @@
             })
 
             socket.on('yourGameJoined', (msg) => {
-                if (msg.createdBy == getUUID()) {
-                    console.log(msg)
-                    setCurrentGame(msg)
+                if (msg[1] == getUUID()) {
+                    console.log(msg[0])
+                    setCurrentGame(msg[0])
                 }
             })
 
             socket.on('opponentMove2', (move) => {
-                if (move[0].player2 == getUUID()) {
-                    console.log(move[1])
-                    document.getElementById("block-"+move[1]).style.background = "red"
+                console.log(move)
+                if (move[0] == getCurrentGame()) {
+                    if (move[1] == getUUID()) {
+                    document.getElementById("block-"+move[2]).style.background = "red"
+                }   
                 }
             })
 
             socket.on('opponentMove1', (move) => {
-                if (move[0].player1 == getUUID()) {
-                    console.log(move[1])
-                    document.getElementById("block-"+move[1]).style.background = "red"
+                console.log(move)
+                if (move[0] == getCurrentGame()) {
+                    if (move[1] == getUUID()) {
+                        document.getElementById("block-"+move[2]).style.background = "red"
+                    }
+                }
+            })
+
+            socket.on('hitTrue', (data) => {
+                if (data[1] == getUUID()) {
+                    document.getElementById("block-"+data[2]).style.background = "orange"
                 }
             })
 
@@ -150,8 +160,27 @@
     <script>
 
         const board = document.getElementById('board')
+        const opponentBoard = document.getElementById('opponentBoard')
+        let ships = []
 
         function createBoard() {
+            let x = 0;
+            for (let i = 0; i < 10; i++) {
+                const row = document.createElement('div')
+                row.style.display = "flex";
+                board.appendChild(row)
+                for (let i = 0; i < 10; i++) {
+                    x++;
+                    const block = document.createElement('div')
+                    block.classList.add('block')
+                    block.id = "block-"+x
+                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}' onClick="attack('${x}')"></div>`
+                }
+
+            }
+        }
+
+        function createOpponentBoard() {
             let x = 0;
             for (let i = 0; i < 10; i++) {
                 const row = document.createElement('div')
@@ -195,17 +224,27 @@
         }
 
         function generateRandomShips() {
-            const randomU = Math.floor(Math.random()*100);  
-            placeShip(randomU) 
+            for (let i = 0; i < 20; i++) {
+                let randomU;
+                let x = true;
+                while (x == true) {
+                    randomU = Math.floor(Math.random()*100)+1; 
+                    if (document.getElementById('block-'+randomU).style.background != "gray") {x = false;}
+                }
+                
+                placeShip(randomU) 
+            }
         }
 
         function placeShip(i) {
-            if (i % 10 == 0) {
-                
-            } else {
-
-            }
+            document.getElementById('block-'+i).style.background = "gray"
+            ships.push(i)
         }
+        function getShips() {
+            return ships;
+        }
+
+        generateRandomShips();
 
     </script>
 </body>
