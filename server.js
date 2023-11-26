@@ -62,11 +62,19 @@ app.get('/src/app.js', (req, res) => {
                 parsedData.games["game"+msg[0]].player2 = msg[1]
                 parsedData.games["game"+msg[0]].ongoing = true;
                 parsedData.games["game"+msg[0]].ships2 = msg[2]
+                const rd = (Math.round(Math.random()*1))
+                if (rd == 0) {
+                  parsedData.games["game"+msg[0]].turn = parsedData.games["game"+msg[0]].player1
+                }
+                if (rd == 1) {
+                  parsedData.games["game"+msg[0]].turn = msg[1]
+                }
+                parsedData.games["game"+msg[0]].ships
                 fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.log(err);})
-                socket.emit('gameJoinedID', msg[0]);
+                socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn]);
 
                 //change this for a direct message to the user who created the game
-                socket.broadcast.emit('yourGameJoined', [msg[0], parsedData.games["game"+msg[0]].createdBy])
+                socket.broadcast.emit('yourGameJoined', [msg[0], parsedData.games["game"+msg[0]].createdBy, parsedData.games["game"+msg[0]].turn])
               } else {
                 socket.emit('gameJoinedID', '400');
               }
@@ -82,8 +90,27 @@ app.get('/src/app.js', (req, res) => {
 
         fs.readFile('./games.json','utf-8', function (err, data) {
           let jsonData = JSON.parse(data)
+
+          if (jsonData.games["game"+info[1]].turn != info[2]) {
+            return;
+          }
+
           if (jsonData.games["game"+info[1]].player1 == info[2]) { // if player 1 makes the move
             //change this for a direct message to the user who created the game
+            
+            let attackedBefore = false;
+
+            for (let i = 0; i < jsonData.games["game"+info[1]].moves1; i++) {
+              if (jsonData.games["game"+info[1]].moves1[i] == parseInt(info[0])) {attackedBefore = true; continue;}
+            }
+
+            if (attackedBefore == true) return;
+
+            socket.emit('moveSuccess', {
+              move: info[0],
+              game: jsonData.games["game"+info[1]].id,
+            })
+
             const opponentShips = jsonData.games["game"+info[1]].ships2
             let hit = false;
             for (let i = 0; i < opponentShips.length; i++) {
@@ -91,7 +118,7 @@ app.get('/src/app.js', (req, res) => {
                 hit = true; continue
               }
             }
-            jsonData.games["game"+info[1]].moves1.push(info[0])
+            jsonData.games["game"+info[1]].moves1.push(parseInt(info[0]))
             if (hit == true) {
               jsonData.games["game"+info[1]].sunk1++;
               if (jsonData.games["game"+info[1]].sunk1 >= 20) {
@@ -113,12 +140,27 @@ app.get('/src/app.js', (req, res) => {
               } else {
                 socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
               }
+            } else {
+              jsonData.games["game"+info[1]].turn = jsonData.games["game"+info[1]].player2
             }
             fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
             socket.broadcast.emit('opponentMove2', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
           }
           if (jsonData.games["game"+info[1]].player2 == info[2]) { // if player 2 makes the move
             
+            let attackedBefore = false;
+
+            for (let i = 0; i < jsonData.games["game"+info[1]].moves2; i++) {
+              if (jsonData.games["game"+info[1]].moves2[i] == parseInt(info[0])) {attackedBefore = true; continue;}
+            }
+
+            if (attackedBefore == true) return;
+
+            socket.emit('moveSuccess', {
+              move: info[0],
+              game: jsonData.games["game"+info[1]].id,
+            })
+
             const opponentShips = jsonData.games["game"+info[1]].ships1
             let hit = false;
             for (let i = 0; i < opponentShips.length; i++) {
@@ -127,7 +169,7 @@ app.get('/src/app.js', (req, res) => {
                 hit = true; continue
               }
             }
-            jsonData.games["game"+info[1]].moves2.push(info[0])
+            jsonData.games["game"+info[1]].moves2.push(parseInt(info[0]))
             if (hit == true) {
               jsonData.games["game"+info[1]].sunk2++;
               if (jsonData.games["game"+info[1]].sunk2 >= 20) {
@@ -149,6 +191,8 @@ app.get('/src/app.js', (req, res) => {
               } else {
                 socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
               }
+            }else {
+              jsonData.games["game"+info[1]].turn = jsonData.games["game"+info[1]].player1
             }
             fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
             //change this for a direct message to the user who created the game
