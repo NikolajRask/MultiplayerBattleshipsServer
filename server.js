@@ -87,8 +87,26 @@ app.get('/src/app.js', (req, res) => {
         })
     })
 
+    // This method is only used in the educational version of the game so if the player fails to answer a question his move goes to the other player without making a move.
     socket.on('wasteMove', (info) => {
-      
+      fs.readFile('./games.json','utf-8', function (err, data) {
+        const jsonData = JSON.parse(data)
+        if (jsonData.games["game"+info.game] != undefined) {
+          if (jsonData.games["game"+info.game].turn == info.player) {
+            socket.emit('yourMovedSkipped', {game: info.game})
+            if (info.player == jsonData.games["game"+info.game].player1) {
+              jsonData.games["game"+info.game].turn = jsonData.games["game"+info.game].player2
+              socket.broadcast.emit('opponentMovedSkipped', {game: info.game, player: jsonData.games["game"+info.game].player2}) 
+            }
+
+            if (info.player == jsonData.games["game"+info.game].player2) {
+              jsonData.games["game"+info.game].turn = jsonData.games["game"+info.game].player1
+              socket.broadcast.emit('opponentMovedSkipped', {game: info.game, player: jsonData.games["game"+info.game].player1}) 
+            }
+            fs.writeFile('./games.json', JSON.stringify(jsonData), function (err) { if (err) throw err })
+          }
+        }
+      })
     })
 
     socket.on('makeMove', (info) => {
