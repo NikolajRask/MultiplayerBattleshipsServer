@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BattleShip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -139,7 +139,7 @@
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
-        <p class="icon">BattleShips</p>
+        <p class="icon">BattleShip</p>
     </div>
     <main>
         <ul id="messages"></ul>
@@ -204,6 +204,12 @@
                 }
             })
 
+            socket.on('moveSuccess', (data) => {
+                if (data.game == getCurrentGame()) {
+                    document.getElementById('oBlock-'+data.move).style.background = "black"
+                }
+            })
+
             socket.on('gameId', (msg) => {
                 gameId.innerHTML = "#"+msg + `<svg id="copy-svg" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>`
                 document.getElementById('gameIdPlaceholder').value = msg
@@ -216,7 +222,7 @@
             })
 
             socket.on('gameJoinedID', (msg) => {
-                setCurrentGame(msg)
+                setCurrentGame(msg[0])
 
             })
 
@@ -250,6 +256,21 @@
                     document.getElementById("oBlock-"+data[2]).style.background = "orange"
                 }
             })
+
+            socket.on('gameEnded', (data) => {
+                if (data.game == getCurrentGame()) {
+                    if (data.winner == getUUID()) {
+                        window.alert("You Won")
+                        endGame();
+                    }
+                    if (data.loser == getUUID()) {
+                        window.alert("You Lost")
+                        endGame();
+                    }
+                }
+            })
+
+
 
 
             // socket.on('chat message', (msg) => {
@@ -306,7 +327,7 @@
         function attack(x) {
             if (getCurrentGame() != undefined) {
                 socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
-                document.getElementById("oBlock-"+x).style.background = "blue"
+                
             }
         }   
 
@@ -346,6 +367,10 @@
         }
         function getShips() {
             return ships;
+        }
+
+        function endGame() {
+            currentGame = undefined
         }
 
         generateRandomShips();
