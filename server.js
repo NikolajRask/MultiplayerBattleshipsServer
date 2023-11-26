@@ -45,7 +45,7 @@ app.get('/src/app.js', (req, res) => {
             const parsedData = JSON.parse(data)
             const id =  Math.floor(Math.random() * 10000000)
             const d = new Date()
-            parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true}
+            parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0}
             fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {
                 if (err) throw err;
             })
@@ -91,7 +91,30 @@ app.get('/src/app.js', (req, res) => {
                 hit = true; continue
               }
             }
-            if (hit == true) {socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player1,info[0]])}
+            jsonData.games["game"+info[1]].moves1.push(info[0])
+            if (hit == true) {
+              jsonData.games["game"+info[1]].sunk1++;
+              if (jsonData.games["game"+info[1]].sunk1 >= 20) {
+                socket.broadcast.emit('gameEnded', {
+                  winner: jsonData.games["game"+info[1]].player1,
+                  loser: jsonData.games["game"+info[1]].player2,
+                  game: jsonData.games["game"+info[1]].id,
+                  move: info[0]
+                });
+                socket.emit('gameEnded', {
+                  winner: jsonData.games["game"+info[1]].player1,
+                  loser: jsonData.games["game"+info[1]].player2,
+                  game: jsonData.games["game"+info[1]].id,
+                  move: info[0]
+                })
+                jsonData.games["game"+info[1]] = undefined;
+                fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                return;
+              } else {
+                socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
+              }
+            }
+            fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
             socket.broadcast.emit('opponentMove2', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
           }
           if (jsonData.games["game"+info[1]].player2 == info[2]) { // if player 2 makes the move
@@ -100,12 +123,34 @@ app.get('/src/app.js', (req, res) => {
             let hit = false;
             for (let i = 0; i < opponentShips.length; i++) {
               if (opponentShips[i] == info[0]) {
-                
+
                 hit = true; continue
               }
             }
-            if (hit == true) {socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player2,info[0]])}
-
+            jsonData.games["game"+info[1]].moves2.push(info[0])
+            if (hit == true) {
+              jsonData.games["game"+info[1]].sunk2++;
+              if (jsonData.games["game"+info[1]].sunk2 >= 20) {
+                socket.broadcast.emit('gameEnded', {
+                  winner: jsonData.games["game"+info[1]].player2,
+                  loser: jsonData.games["game"+info[1]].player1,
+                  game: jsonData.games["game"+info[1]].id,
+                  move: info[0]
+                })
+                socket.emit('gameEnded', {
+                  winner: jsonData.games["game"+info[1]].player2,
+                  loser: jsonData.games["game"+info[1]].player1,
+                  game: jsonData.games["game"+info[1]].id,
+                  move: info[0]
+                })
+                jsonData.games["game"+info[1]] = undefined;
+                fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                return;
+              } else {
+                socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
+              }
+            }
+            fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
             //change this for a direct message to the user who created the game
             socket.broadcast.emit('opponentMove1', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
           }

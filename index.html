@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BattleShip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -139,7 +139,7 @@
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
-        <p class="icon">BattleShips</p>
+        <p class="icon">BattleShip</p>
     </div>
     <main>
         <ul id="messages"></ul>
@@ -251,6 +251,19 @@
                 }
             })
 
+            socket.on('gameEnded', (data) => {
+                if (data.game == getCurrentGame()) {
+                    if (data.winner == getUUID()) {
+                        window.alert("You Won")
+                        endGame();
+                    }
+                    if (data.loser == getUUID()) {
+                        window.alert("You Lost")
+                        endGame();
+                    }
+                }
+            })
+
 
             // socket.on('chat message', (msg) => {
             //     const item = document.createElement('li');
@@ -346,6 +359,10 @@
         }
         function getShips() {
             return ships;
+        }
+
+        function endGame() {
+            currentGame = undefined
         }
 
         generateRandomShips();
