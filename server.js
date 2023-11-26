@@ -58,6 +58,9 @@ app.get('/src/app.js', (req, res) => {
         fs.readFile('./games.json','utf-8', function (err, data) {
             const parsedData = JSON.parse(data)
             if (parsedData.games["game"+msg[0]] != undefined) {
+              if (parsedData.games["game"+msg[0]].ongoing == true) {
+                return;
+              }
               if (msg[1] != parsedData.games["game"+msg[0]].createdBy) {
                 parsedData.games["game"+msg[0]].player2 = msg[1]
                 parsedData.games["game"+msg[0]].ongoing = true;
@@ -82,6 +85,10 @@ app.get('/src/app.js', (req, res) => {
                 socket.emit('gameJoinedID', "404");
             }
         })
+    })
+
+    socket.on('wasteMove', (info) => {
+      
     })
 
     socket.on('makeMove', (info) => {
@@ -144,7 +151,7 @@ app.get('/src/app.js', (req, res) => {
               jsonData.games["game"+info[1]].turn = jsonData.games["game"+info[1]].player2
             }
             fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
-            socket.broadcast.emit('opponentMove2', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
+            socket.broadcast.emit('opponentMove2', [info[1],jsonData.games["game"+info[1]].player2,info[0], hit])
           }
           if (jsonData.games["game"+info[1]].player2 == info[2]) { // if player 2 makes the move
             
@@ -196,7 +203,7 @@ app.get('/src/app.js', (req, res) => {
             }
             fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
             //change this for a direct message to the user who created the game
-            socket.broadcast.emit('opponentMove1', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
+            socket.broadcast.emit('opponentMove1', [info[1],jsonData.games["game"+info[1]].player1,info[0],hit])
           }
         })
       }
