@@ -49,6 +49,7 @@
             float: right;
             margin-right: 50px;
             margin-top: 25px;
+            color: rgb(205, 205, 205);
         }
 
         .icon {
@@ -156,6 +157,7 @@
             text-align: center;
             margin-top: 39px;
             color: white;
+            user-select: all;
         }
 
         #copy-svg {
@@ -320,6 +322,10 @@
 
         .account-container > * {
             color: white;
+        }
+
+        * {
+            user-select: none;
         }
 
         .uuid-placeholder {
@@ -695,6 +701,12 @@
                             name: document.getElementById('username-input').value,
                             uuid: uuid
                         })
+                        document.getElementById('stat-wins').innerHTML = 0
+                        document.getElementById('stat-loses').innerHTML = 0
+                        document.getElementById('stat-elo').innerHTML = 1000
+                        document.getElementById('stat-hits').innerHTML = 0
+                        document.getElementById('account-name').innerHTML = document.getElementById('username-input').value
+                        document.getElementById('uuid-placeholder').innerHTML = "UUID-"+uuid;
                     } else {
 
                     }
@@ -721,7 +733,7 @@
 
         function makeUUID() {
             const UUID = Math.floor(Math.random() * 10000000000)
-            localStorage.setItem('uuid',uuid);
+            localStorage.setItem('uuid',UUID);
         }
 
         function setCurrentGame(id) {
