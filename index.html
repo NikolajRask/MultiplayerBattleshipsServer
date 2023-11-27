@@ -94,6 +94,10 @@
             margin-top: 40px;
         }
 
+        .btn:hover {
+            background: rgba(0, 123, 255,0.85);
+        }
+
         .actionSection {
             width: 400px;
             height: 100px;
@@ -104,12 +108,36 @@
         }
 
         .input {
-            width: 200px;
+            width: 280px;
             margin: 0px;
+            margin-top: 39px;
+            padding: 10px;
+            outline: none;
+            border: 2px solid black;
+            border-radius: 5px;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+            border-right: none;
+            margin-right: 0px;
         }
 
         .joinBtn {
             margin: 0px;
+            margin-left: -5px;
+            padding: 11.5px;
+            border: none;
+            background: rgb(242, 49, 10);
+            color: white;
+            margin-top: 18px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            cursor: pointer;
+            padding-left: 18px;
+            padding-right: 19px;
+        }
+
+        .joinBtn:hover {
+            background: rgba(242, 49, 10,0.85);
         }
 
         .gameIdContainer {
@@ -129,17 +157,125 @@
             height: 26px;
         }
 
+        .nav-item {
+            float: left;
+            margin-left: 50px;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+
+        .nav-item:hover {
+            cursor: pointer;
+            color: gray;
+        }
+
         #gameIdPlaceholder {position: absolute;opacity: 0;}
+
+        #page-game {display: none}
+
+        #page-leaderboard {display: none}
+        
+        #page-account {display: none}
+
+        #page-ai {display: none}
+
+
+        
+        /*leaderboard css*/
+
+        .leaderboard {
+            width: 800px;
+            position: absolute;
+            margin-left: -400px;
+            left: 50%;
+            min-height: 100px;
+            background: white;
+            margin-top: 70px;
+        }
+
+        .leaderboard-nav {
+            display: flex;
+            border-bottom: 1px solid gray;
+        }
+
+        .leaderboard-nav-header {
+            font-weight: bold;
+            margin-right: 144px;
+            width: fit-content;
+            text-align: center;
+        }
+
+        .overlay {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            background: rgba(0,0,0,0.5);
+            top: 0px;
+            display: none;
+        }
+
+        .modal {
+            width: 450px;
+            height: 600px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            z-index: 10;
+            margin-left: -225px;
+            left: 50%;
+            margin-top: -300px;
+            top: 50%;
+            display: none;
+        }
+
+        .modal > h1 {
+            font-size: 46px;
+            text-align: center;
+            margin: 50px;
+
+        }
+
+        .name-input {
+            width: 300px;
+            margin-left: calc(((450px - 300px - 40px) / 2));
+            padding: 10px 20px 10px 20px;
+            border-radius: 5px;
+            border: 1px solid black;
+            font-size: 16px;
+        }
+
+        .continue-btn {
+            width: 340px;
+            position: absolute;
+            height: 50px;
+            background: rgb(67, 67, 214);
+            margin-left: calc((450px - 340px) / 2);
+            border-radius: 10px;
+            margin-top: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .continue-btn:hover {
+            background: rgba(67, 67, 214,0.85);
+        }
+
+        .continue-btn > p {
+            text-align: center;
+        }
 
     </style>
 </head>
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
+        <p onClick="switchPage('game')" class="nav-item" style="margin-left: 400px;">Play</p>
+        <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
+        <p onClick="switchPage('account')" class="nav-item">Account</p>
         <p class="icon">BattleShip</p>
     </div>
-    <main>
-        <ul id="messages"></ul>
+    <main id="page-game">
         <div class="actions">
             <div class="actionSection">
                 <button id="createGame" class="btn">Create game</button>
@@ -159,15 +295,60 @@
                 
             </div>
         </div>
-    </main>     
-    
+    </main> 
+    <main id="page-leaderboard">
+        <div class="leaderboard">
+            <div class="leaderboard-nav">
+                <p class="leaderboard-nav-header">Ranks</p>
+                <p class="leaderboard-nav-header">Elo</p>
+                <p class="leaderboard-nav-header">Name</p>
+                <p class="leaderboard-nav-header">Wins</p>
+                <p class="leaderboard-nav-header">Hits</p>
+            </div>
+        </div>
+    </main>    
+    <main id="page-account">
+
+    </main>
+    <main id="page-ai">
+
+    </main>
+    <div class="overlay"></div>
+    <div class="modal">
+        <h1>Hey! We don't know you yet?</h1>
+        <input placeholder="@yourhandle" id="name" class="name-input">
+        <div class="continue-btn">
+            <p>Continue</p>
+        </div>
+    </div>
     <script>
         let currentGame;
+        if (localStorage.getItem('currentPage') == null) {
+            localStorage.setItem('currentPage', 'game')
+        }
         let uuid;
+        let pages = {
+            game: document.getElementById('page-game'),
+            leaderboard: document.getElementById('page-leaderboard'),
+            account: document.getElementById('page-account'),
+            ai: document.getElementById('page-ai')
+        }
         const socket = io();
 
+        pages[localStorage.getItem('currentPage')].style.display = "block"
+
+        function switchPage(page) {
+            localStorage.setItem('currentPage', page)
+            pages.game.style.display = "none"
+            pages.leaderboard.style.display = "none"
+            pages.account.style.display = "none"
+            pages.ai.style.display = "none"
+
+            pages[page].style.display = "block"
+        }
+
         socket.on('playersOnlineUpdate', (playerCount) => {
-                if (playerCount == 0) {
+                if (playerCount == '1' || playerCount == 1) {
                     document.getElementById('playerOnline').innerHTML = playerCount + " Player Online"
                 } else {
                     document.getElementById('playerOnline').innerHTML = playerCount + " Players Online"
@@ -192,7 +373,7 @@
 
             joinGame.addEventListener('click', () => {
                 if (input.value != "") {
-                    socket.emit("joinGame", [input.value, getUUID(), getShips()])
+                    socket.emit("joinGame", [input.value.replace("#",""), getUUID(), getShips()])
                     input.value = ""
                 }
             })
@@ -216,10 +397,13 @@
             })
 
             socket.on('gameJoinedID', (msg) => {
-                setCurrentGame(msg[0])
-                document.querySelector('.boards').style.opacity = 1
-                if (msg[1] != getUUID()) {
-                    document.getElementById('opponentBoard').style.opacity = '0.3'
+                if (parseInt(msg) != 400 && parseInt(msg) != 404) {
+                    setCurrentGame(msg[0])
+                    console.log(msg)
+                    document.querySelector('.boards').style.opacity = 1
+                    if (msg[1] != getUUID()) {
+                        document.getElementById('opponentBoard').style.opacity = '0.3'
+                    }
                 }
             })
 
@@ -358,7 +542,7 @@
             return currentGame;
         }
 
-        const shipAmount = 10;
+        const shipAmount = 20;
 
         function generateRandomShips() {
             for (let i = 0; i < shipAmount; i++) {
