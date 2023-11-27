@@ -1,6 +1,6 @@
 const express = require('express');
-const { createServer } = require('node:http');
-const { join, parse } = require('node:path');
+const { createServer } = require('http');
+const { join, parse } = require('path');
 const { Server } = require('socket.io');
 const fs = require('fs')
 
