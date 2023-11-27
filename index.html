@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BattleShip</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/png" href="./icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -303,7 +303,7 @@
         <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
-        <p class="icon">BattleShip</p>
+        <p class="icon">BattleShip <img src="icon.png" width="40" height="40" style="position: absolute;margin-left: 10px;margin-top: -8px;"/></p>
     </div>
     <main id="page-game">
         <div class="actions" id="actions">
@@ -346,11 +346,11 @@
         </div>
     </main>    
     <main id="page-account">
-
+        <div class="account-container"></div>
     </main>
     <main id="page-ai">
         <div style="width:1000px; position: absolute; margin-left: -500px; left: 50%;">
-            <div style="width:400px;">
+            <div style="width:400px;margin-left: 300px;">
                 <p style="text-align: center;" class="startAIGame">Start Game</p>
             </div>
         </div>
