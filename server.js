@@ -24,16 +24,11 @@ app.get('/src/app.js', (req, res) => {
     playersOnline++
     socket.broadcast.emit('playersOnlineUpdate', playersOnline)
     socket.emit('playersOnlineUpdate', playersOnline)
-    //console.log(socket.id)
-    socket.on('chat message', (msg) => {
-        socket.broadcast.emit('chat message', msg);
-        console.log('user: '+msg)
-    });
-    console.log('a user connected');
+    console.log('An user connected');
     socket.on('disconnect', (e) => {
       playersOnline--
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)
-      console.log('user disconnected');
+      console.log('An user disconnected');
     });
 
     socket.on('requestPlayerCount', (uuid) => {
@@ -73,7 +68,7 @@ app.get('/src/app.js', (req, res) => {
                   parsedData.games["game"+msg[0]].turn = msg[1]
                 }
                 parsedData.games["game"+msg[0]].ships
-                fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.log(err);})
+                fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error(err);})
                 socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn]);
 
                 //change this for a direct message to the user who created the game
@@ -110,7 +105,6 @@ app.get('/src/app.js', (req, res) => {
     })
 
     socket.on('makeMove', (info) => {
-      console.log(info)
       if (info[1] != null) {
 
         fs.readFile('./games.json','utf-8', function (err, data) {

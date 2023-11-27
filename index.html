@@ -166,8 +166,11 @@
         const socket = io();
 
         socket.on('playersOnlineUpdate', (playerCount) => {
-                console.log("e")
-                document.getElementById('playerOnline').innerHTML = playerCount + " Players Online"
+                if (playerCount == 0) {
+                    document.getElementById('playerOnline').innerHTML = playerCount + " Player Online"
+                } else {
+                    document.getElementById('playerOnline').innerHTML = playerCount + " Players Online"
+                }
         })
         socket.emit('requestPlayerCount', 0)
 
@@ -180,13 +183,6 @@
             const input = document.getElementById('gameIdInput');
             const messages = document.getElementById('messages');
 
-            // form.addEventListener('submit', (e) => {
-            //     e.preventDefault();
-            //     if (input.value) {
-            //         socket.emit('chat message', input.value);
-            //         input.value = '';
-            //     }
-            // });
             createGame.addEventListener('click', () => {
                 socket.emit('requestGame', [getUUID(), getShips()])
                 document.getElementById("createGame").style.display = "none"
