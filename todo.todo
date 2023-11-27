@@ -1,0 +1,14 @@
+-- Need to have --
+    - Fix Turn Server Crash Error
+    - Make game winnable and update player stats
+    - Test the shit out of the servers
+    - Get Leaderboard to work
+    - Stop game if player leaves
+    - Add Equations to be solved
+    - Make navbar reponsive and other content aswell if posible
+
+-- Nice to have --
+    - Add AI player
+    - Make ships moveable
+    - Add player chat
+    - Add login system with uuid 

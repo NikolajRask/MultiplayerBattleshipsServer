@@ -39,6 +39,8 @@
         .nav {
             width: 100%;
             height: 70px;
+            background: rgb(2,0,36);
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%);
         }
 
         .nav > * {
@@ -746,23 +748,100 @@
 
         const shipAmount = 20;
 
-        function generateRandomShips() {
-            for (let i = 0; i < shipAmount; i++) {
-                let randomU;
-                let x = true;
-                while (x == true) {
-                    randomU = Math.floor(Math.random()*100)+1; 
-                    if (document.getElementById('block-'+randomU).style.background != "gray") {x = false;}
-                }
+        // function generateRandomShips() {
+        //     for (let i = 0; i < shipAmount; i++) {
+        //         let randomU;
+        //         let x = true;
+        //         while (x == true) {
+        //             randomU = Math.floor(Math.random()*100)+1; 
+        //             if (document.getElementById('block-'+randomU).style.background != "gray") {x = false;}
+        //         }
                 
-                placeShip(randomU) 
+        //         placeShip2(randomU) 
+        //     }
+        // }
+
+        function isShipPlacementValid(board, shipSize, row, col, horizontal) {
+            if (horizontal) {
+                if (col + shipSize > 10) return false;
+                for (let i = -1; i < shipSize + 1; i++) {
+                    for (let j = -1; j < 2; j++) {
+                        if (row + j >= 0 && row + j < 10 && col + i >= 0 && col + i < 10 && board[row + j][col + i] === 1) {
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                if (row + shipSize > 10) return false;
+                for (let i = -1; i < shipSize + 1; i++) {
+                    for (let j = -1; j < 2; j++) {
+                        if (row + i >= 0 && row + i < 10 && col + j >= 0 && col + j < 10 && board[row + i][col + j] === 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeShip(board, shipSize, row, col, horizontal) {
+            for (let i = 0; i < shipSize; i++) {
+                if (horizontal) {
+                    board[row][col + i] = 1;
+                } else {
+                    board[row + i][col] = 1;
+                }
             }
         }
 
-        function placeShip(i) {
-            document.getElementById('block-'+i).style.background = "gray"
-            document.getElementById('AIblock-'+i).style.background = "gray"
-            ships.push(i)
+        function createBoardWithShips() {
+            const ships = [5, 4, 4, 3, 2, 2, 2];  // Ship sizes
+            const board = Array.from({ length: 10 }, () => Array(10).fill(0));
+
+            for (const shipSize of ships) {
+                let placed = false;
+                while (!placed) {
+                    const row = Math.floor(Math.random() * 10);
+                    const col = Math.floor(Math.random() * 10);
+                    const horizontal = Math.random() < 0.5;
+
+                    if (isShipPlacementValid(board, shipSize, row, col, horizontal)) {
+                        placeShip(board, shipSize, row, col, horizontal);
+                        placed = true;
+                    }
+                }
+            }
+
+            return board;
+        }
+
+        function randomizeShips(x) {
+            if (x) {
+                ships = []
+                for (let i = 0; i < 100; i++) {
+                    document.getElementById('block-'+(i+1)).style.background = ""
+                    document.getElementById('AIblock-'+(i+1)).style.background = ""
+                }
+            }
+
+            const gameBoard = createBoardWithShips();
+            for (let i = 0; i < gameBoard.length; i++) {
+                for (let e = 0; e < 10; e++) {
+                    if (gameBoard[i][e] == 1) {
+                        ships.push((i*10)+e + 1)
+                        placeShipOnBoard((i*10)+e + 1)
+                    }
+                }
+            }
+        }
+
+
+        randomizeShips(false)
+        
+
+        function placeShipOnBoard(i) {
+            document.getElementById('block-'+i).style.background = "rgba(0,0,0,0.7)"
+            document.getElementById('AIblock-'+i).style.background = "rgba(0,0,0,0.7)"
         }
         function getShips() {
             return ships;
@@ -771,8 +850,6 @@
         function endGame() {
             currentGame = undefined
         }
-
-        generateRandomShips();
 
     </script>
 </body>
