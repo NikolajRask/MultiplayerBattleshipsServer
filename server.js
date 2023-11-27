@@ -40,8 +40,8 @@ app.get('/src/app.js', (req, res) => {
         if (details.uuid != undefined) {
           fs.readFile('./users.json', 'utf-8', (err, data) => {
             const parsedData = JSON.parse(data)
-            if (parsedData['user'+uuid] == undefined) {
-              parsedData['user'+uuid] = {
+            if (parsedData['user'+details.uuid] == undefined) {
+              parsedData['user'+details.uuid] = {
                 name: details.name,
                 uuid: details.uuid,
                 elo: 1000,
@@ -71,7 +71,13 @@ app.get('/src/app.js', (req, res) => {
 
     socket.on('getUser', (uuid) => {
       fs.readFile('./users.json', 'utf-8', (err, data) => {
-        socket.emit('userData', JSON.parse(data))
+        const jsonData = JSON.parse(data);
+
+        if (jsonData['user'+uuid] != undefined) {
+          socket.emit('userDetails', jsonData['user'+uuid])
+        } else {
+          socket.emit('noUserFound', {})
+        }
       })
     })
     
@@ -80,11 +86,13 @@ app.get('/src/app.js', (req, res) => {
             const parsedData = JSON.parse(data)
             const id =  Math.floor(Math.random() * 10000000)
             const d = new Date()
-            parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0}
-            fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {
-                if (err) throw err;
+            fs.readFile('./users.json','utf-8', function (err2, data2) {
+              parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0, name1: JSON.parse(data2)["user"+info[0]].name, name2: ""}
+              fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {
+                  if (err) throw err;
+              })
+              socket.emit('gameId', id);
             })
-            socket.emit('gameId', id);
         })
 
     })
@@ -101,19 +109,22 @@ app.get('/src/app.js', (req, res) => {
                 parsedData.games["game"+msg[0]].player2 = msg[1]
                 parsedData.games["game"+msg[0]].ongoing = true;
                 parsedData.games["game"+msg[0]].ships2 = msg[2]
-                const rd = (Math.round(Math.random()*1))
-                if (rd == 0) {
-                  parsedData.games["game"+msg[0]].turn = parsedData.games["game"+msg[0]].player1
-                }
-                if (rd == 1) {
-                  parsedData.games["game"+msg[0]].turn = msg[1]
-                }
-                parsedData.games["game"+msg[0]].ships
-                fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error3(err);})
-                socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn]);
-
-                //change this for a direct message to the user who created the game
-                socket.broadcast.emit('yourGameJoined', [msg[0], parsedData.games["game"+msg[0]].createdBy, parsedData.games["game"+msg[0]].turn])
+                fs.readFile('./users.json','utf-8', function (err2, data2) {
+                  parsedData.games["game"+msg[0]].name2 = JSON.parse(data2)["user"+msg[1]].name
+                  const rd = (Math.round(Math.random()*1))
+                  if (rd == 0) {
+                    parsedData.games["game"+msg[0]].turn = parsedData.games["game"+msg[0]].player1
+                  }
+                  if (rd == 1) {
+                    parsedData.games["game"+msg[0]].turn = msg[1]
+                  }
+                  parsedData.games["game"+msg[0]].ships
+                  fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error3(err);})
+                  socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn, parsedData.games["game"+msg[0]].name2, parsedData.games["game"+msg[0]].name1]);
+  
+                  //change this for a direct message to the user who created the game
+                  socket.broadcast.emit('yourGameJoined', [msg[0], parsedData.games["game"+msg[0]].createdBy, parsedData.games["game"+msg[0]].turn, parsedData.games["game"+msg[0]].name1, parsedData.games["game"+msg[0]].name2])
+                })
               } else {
                 socket.emit('gameJoinedID', '400');
               }

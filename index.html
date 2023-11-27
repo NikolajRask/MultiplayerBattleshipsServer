@@ -70,6 +70,10 @@
         #opponentBoard {
             margin-left: 200px;
         }
+
+        #ai-opponentBoard {
+            margin-left: 200px;
+        }
         
         .actions {
             width: 1000px;
@@ -265,26 +269,60 @@
             text-align: center;
         }
 
+        #gameInfo {
+            display: none;
+        }
+
+        #actions {
+            display: block;
+        }
+
+        .playerName {
+            text-align: center;
+            font-size: 21px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-top: 40px;
+        }
+
+        .startAIGame {
+            padding: 10px 20px 10px 20px;
+            color: white;
+            background: green;
+            margin-top: 45px;
+            border-radius: 5px;
+            cursor: pointer;
+        }   
+
     </style>
 </head>
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
-        <p onClick="switchPage('game')" class="nav-item" style="margin-left: 400px;">Play</p>
+        <p onClick="switchPage('game')" class="nav-item" style="margin-left: 400px;">Online</p>
+        <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
         <p class="icon">BattleShip</p>
     </div>
     <main id="page-game">
-        <div class="actions">
-            <div class="actionSection">
+        <div class="actions" id="actions">
+            <div class="actionSection" style="position: absolute;">
                 <button id="createGame" class="btn">Create game</button>
                 <h1 id="gameId" class="gameId"></h1>
                 <input id="gameIdPlaceholder"></input>
             </div>
-            <div class="actionSection">
+            <div class="actionSection" style="position: absolute;margin-left: 600px;">
                 <input placeholder="#xxxxxx" class="input" id="gameIdInput">
                 <button id="joinGame" class="joinBtn">Join game</button>
+            </div>
+        </div>
+        <div class="actions" id="gameInfo">
+            <div class="actionSection" style="position: absolute;">
+                <p class="playerName" id="player1"></p>
+            </div>
+            <div class="actionSection" style="position: absolute;margin-left: 600px;">
+                <p class="playerName" id="player2"></p>
             </div>
         </div>
         <div class="boards">
@@ -311,22 +349,37 @@
 
     </main>
     <main id="page-ai">
-
+        <div style="width:1000px; position: absolute; margin-left: -500px; left: 50%;">
+            <div style="width:400px;">
+                <p style="text-align: center;" class="startAIGame">Start Game</p>
+            </div>
+        </div>
+        <div class="boards">
+            <div id="ai-board" style="width: 400px; height: 400px;">
+                    
+            </div>
+            <div id="ai-opponentBoard" style="width: 400px; height: 400px;">
+                
+            </div>
+        </div>
     </main>
-    <div class="overlay"></div>
-    <div class="modal">
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="accountModal">
         <h1>Hey! We don't know you yet?</h1>
-        <input placeholder="@yourhandle" id="name" class="name-input">
-        <div class="continue-btn">
+        <input placeholder="@yourhandle" id="username-input" class="name-input">
+        <div onClick="createUser()" class="continue-btn">
             <p>Continue</p>
         </div>
     </div>
     <script>
         let currentGame;
+
+        let name;
+
         if (localStorage.getItem('currentPage') == null) {
             localStorage.setItem('currentPage', 'game')
         }
-        let uuid;
+
         let pages = {
             game: document.getElementById('page-game'),
             leaderboard: document.getElementById('page-leaderboard'),
@@ -347,6 +400,7 @@
             pages[page].style.display = "block"
         }
 
+
         socket.on('playersOnlineUpdate', (playerCount) => {
                 if (playerCount == '1' || playerCount == 1) {
                     document.getElementById('playerOnline').innerHTML = playerCount + " Player Online"
@@ -358,7 +412,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            makeUUID();
+            if (localStorage.getItem('uuid') == null) {
+                makeUUID();
+            }
+
+            socket.emit('getUser', getUUID())
+
             const gameId = document.getElementById('gameId');
             const createGame = document.getElementById('createGame');
             const joinGame = document.getElementById('joinGame');
@@ -371,11 +430,17 @@
 
             })
 
+            
             joinGame.addEventListener('click', () => {
                 if (input.value != "") {
                     socket.emit("joinGame", [input.value.replace("#",""), getUUID(), getShips()])
                     input.value = ""
                 }
+            })
+
+            socket.on('noUserFound', (data) => {
+                document.getElementById('accountModal').style.display = "block"
+                document.getElementById('overlay').style.display = "block"
             })
 
             socket.on('moveSuccess', (data) => {
@@ -396,6 +461,8 @@
                 })
             })
 
+
+            //When you join a game
             socket.on('gameJoinedID', (msg) => {
                 if (parseInt(msg) != 400 && parseInt(msg) != 404) {
                     setCurrentGame(msg[0])
@@ -404,9 +471,14 @@
                     if (msg[1] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     }
+                    document.getElementById('actions').style.display = "none"
+                    document.getElementById('gameInfo').style.display = "block"
+                    document.getElementById('player1').innerHTML = msg[2]
+                    document.getElementById('player2').innerHTML = msg[3]
                 }
             })
 
+            // When someone joins your game
             socket.on('yourGameJoined', (msg) => {
                 if (msg[1] == getUUID()) {
                     console.log(msg[0])
@@ -415,6 +487,10 @@
                     if (msg[2] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     }
+                    document.getElementById('actions').style.display = "none"
+                    document.getElementById('gameInfo').style.display = "block"
+                    document.getElementById('player1').innerHTML = msg[3]
+                    document.getElementById('player2').innerHTML = msg[4]
                 }
             })
 
@@ -465,15 +541,21 @@
             })
 
 
+            socket.on('userAlreadyExist', (data) => {
+                makeUUID();
+                //give error message
+            })
+ 
 
+            socket.on('userDetails', (data) => {
+                name = data.name
+            })
 
-            // socket.on('chat message', (msg) => {
-            //     const item = document.createElement('li');
-            //     item.textContent = msg;
-            //     console.log(msg)
-            //     messages.appendChild(item);
-            //     window.scrollTo(0, document.body.scrollHeight);
-            // }); 
+            socket.on('userCreated', (data) => {
+                name = data.name
+                document.getElementById('accountModal').style.display = "none"
+                document.getElementById('overlay').style.display = "none"
+            })
 
         })
 
@@ -486,29 +568,39 @@
         const opponentBoard = document.getElementById('opponentBoard')
         let ships = []
 
-        function createBoard() {
+        function createBoard(id = "board", ai = false) {
             let x = 0;
             for (let i = 0; i < 10; i++) {
                 const row = document.createElement('div')
                 row.style.display = "flex";
-                board.appendChild(row)
+                document.getElementById(id).appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
-                    row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}'></div>`
+                    if (!ai) {
+                        row.innerHTML = row.innerHTML + `<div class='block' id='block-${x}'></div>`
+                    } else {
+                        row.innerHTML = row.innerHTML + `<div class='block' id='AIblock-${x}'></div>`
+                    }
                 }
 
             }
         }
 
-        function createOpponentBoard() {
+
+        function createOpponentBoard(id = "opponentBoard", ai = false) {
             let x = 0;
             for (let i = 0; i < 10; i++) {
                 const row = document.createElement('div')
                 row.style.display = "flex";
-                opponentBoard.appendChild(row)
+                document.getElementById(id).appendChild(row)
                 for (let i = 0; i < 10; i++) {
                     x++;
-                    row.innerHTML = row.innerHTML + `<div class='block-2' id='oBlock-${x}' onClick="attack('${x}')"></div>`
+                    if (!ai) {
+                        row.innerHTML = row.innerHTML + `<div class='block-2' id='oBlock-${x}' onClick="attack('${x}')"></div>`
+                    } else {
+                        row.innerHTML = row.innerHTML + `<div class='block-2' id='AIoBlock-${x}' onClick="attack('${x}')"></div>`
+                    }
+                    
                 }
 
             }
@@ -516,6 +608,27 @@
 
         createBoard()
         createOpponentBoard()
+        createBoard('ai-board', true)
+        createOpponentBoard('ai-opponentBoard', true)
+
+
+        function createUser() {
+            if (document.getElementById('username-input').value != "") {
+                if (document.getElementById('username-input').value.length > 3) {
+                    console.log("e")
+                    const uuid = getUUID()
+                    socket.emit('createAccount', {
+                        name: document.getElementById('username-input').value,
+                        uuid: uuid
+                    })
+                } else {
+
+                }
+            } else {
+
+            }
+        }
+
 
 
         function attack(x) {
@@ -526,12 +639,12 @@
         }   
 
         function getUUID() {
-            return uuid;
+            return localStorage.getItem('uuid');
         }
 
         function makeUUID() {
             const UUID = Math.floor(Math.random() * 10000000000)
-            uuid = UUID;
+            localStorage.setItem('uuid',uuid);
         }
 
         function setCurrentGame(id) {
@@ -559,6 +672,7 @@
 
         function placeShip(i) {
             document.getElementById('block-'+i).style.background = "gray"
+            document.getElementById('AIblock-'+i).style.background = "gray"
             ships.push(i)
         }
         function getShips() {
