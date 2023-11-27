@@ -20,6 +20,10 @@ app.get('/icon.png', (req, res) => {
   res.sendFile(join(__dirname, 'icon.png'));
 })
 
+app.get('/background.webp', (req, res) => {
+  res.sendFile(join(__dirname, 'background.webp'));
+})
+
 app.get('/src/app.js', (req, res) => {
     res.sendFile(join(__dirname, 'app.js'));
   });
@@ -175,11 +179,10 @@ app.get('/src/app.js', (req, res) => {
             
             let attackedBefore = false;
 
-            for (let i = 0; i < jsonData.games["game"+info[1]].moves1; i++) {
-              if (jsonData.games["game"+info[1]].moves1[i] == parseInt(info[0])) {attackedBefore = true; continue;}
+            for (let i = 0; i < jsonData.games["game"+info[1]].moves1.length; i++) {
+              console.log(jsonData.games["game"+info[1]].moves1[i], info[0])
+              if (jsonData.games["game"+info[1]].moves1[i] == parseInt(info[0])) {return}
             }
-
-            if (attackedBefore == true) return;
 
             socket.emit('moveSuccess', {
               move: info[0],
@@ -235,11 +238,11 @@ app.get('/src/app.js', (req, res) => {
             
             let attackedBefore = false;
 
-            for (let i = 0; i < jsonData.games["game"+info[1]].moves2; i++) {
-              if (jsonData.games["game"+info[1]].moves2[i] == parseInt(info[0])) {attackedBefore = true; continue;}
+            for (let i = 0; i < jsonData.games["game"+info[1]].moves2.length; i++) {
+              console.log(jsonData.games["game"+info[1]].moves2[i], info[0])
+              if (jsonData.games["game"+info[1]].moves2[i] == parseInt(info[0])) {return}
             }
 
-            if (attackedBefore == true) return;
 
             socket.emit('moveSuccess', {
               move: info[0],

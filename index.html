@@ -13,17 +13,20 @@
         body {
             margin: 0px;
             font-family: 'Inter', sans-serif;
+            background: url('./background.webp');
         }
 
         .block {
-            border: 1px solid gray;
+            border: 1px solid rgb(33, 33, 33);
             width: 40px;
             height: 40px;
+            background: rgba(255,255,255,0.15);
         }
 
 
         .block-2 {
-            border: 1px solid gray;
+            border: 1px solid rgb(33, 33, 33);
+            background: rgba(255,255,255,0.15);
             width: 40px;
             height: 40px;
         }
@@ -36,7 +39,10 @@
         .nav {
             width: 100%;
             height: 70px;
-            border-bottom: 1px solid rgb(228, 228, 228);
+        }
+
+        .nav > * {
+            color: white;
         }
 
         .playersOnline {
@@ -61,7 +67,6 @@
             margin-left: -500px;
             left: 50%;
             margin-top: 125px;
-            opacity: 0.2;
         }
 
         #board {
@@ -69,6 +74,7 @@
 
         #opponentBoard {
             margin-left: 200px;
+            opacity: 0.2;
         }
 
         #ai-opponentBoard {
@@ -85,21 +91,19 @@
 
         .btn {
             padding: 10px 20px 10px 20px;
+            width: 100%;
             font-size: 15px;
             cursor: pointer;
             outline: none;
             border: none;
-            box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.1);
             border-radius: 5px;
             color: white;
-            background: rgb(0, 123, 255);
-            margin-left: 50%;
-            transform: translateX(-50%);
+            background: rgba(0,0,0,0.35);
             margin-top: 40px;
         }
 
         .btn:hover {
-            background: rgba(0, 123, 255,0.85);
+            background: rgba(0,0,0,0.4);;
         }
 
         .actionSection {
@@ -151,6 +155,7 @@
         .gameId {
             text-align: center;
             margin-top: 39px;
+            color: white;
         }
 
         #copy-svg {
@@ -171,7 +176,7 @@
 
         .nav-item:hover {
             cursor: pointer;
-            color: gray;
+            color: rgb(196, 196, 196);
         }
 
         #gameIdPlaceholder {position: absolute;opacity: 0;}
@@ -191,16 +196,19 @@
         .leaderboard {
             width: 800px;
             position: absolute;
-            margin-left: -400px;
+            margin-left: -450px;
             left: 50%;
             min-height: 100px;
-            background: white;
+            padding-left: 50px;
+            padding-right: 50px;
             margin-top: 70px;
+            background: rgba(0,0,0,0.35);
+            border-radius: 10px;
         }
 
         .leaderboard-nav {
             display: flex;
-            border-bottom: 1px solid gray;
+            border-bottom: 1px solid rgb(255, 255, 255,0.4);
         }
 
         .leaderboard-nav-header {
@@ -208,6 +216,7 @@
             margin-right: 144px;
             width: fit-content;
             text-align: center;
+            color: rgb(226, 226, 226);
         }
 
         .overlay {
@@ -288,11 +297,41 @@
         .startAIGame {
             padding: 10px 20px 10px 20px;
             color: white;
-            background: green;
+            background: rgba(0,0,0,0.35);
+            /*border: 1px solid rgb(255, 255, 255,0.4);*/
             margin-top: 45px;
             border-radius: 5px;
             cursor: pointer;
         }   
+
+        .account-container {
+            width: 500px;
+            background: rgba(0,0,0,0.35);
+            height: 600px;
+            left: 50%;
+            margin-left: -250px;
+            position: absolute;
+            margin-top: 50px;
+            box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.2);
+            margin-top: calc(35px - 300px);
+            top: 50%;
+            border-radius: 20px;
+        }
+
+        .account-container > * {
+            color: white;
+        }
+
+        .uuid-placeholder {
+            width: 60%;
+            height: 40px;
+            margin-left: 20%;
+            margin-top: 170px;
+        }
+
+        .uuid-placeholder > p {
+            text-align: center;
+        }
 
     </style>
 </head>
@@ -303,7 +342,7 @@
         <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
-        <p class="icon">BattleShip <img src="icon.png" width="40" height="40" style="position: absolute;margin-left: 10px;margin-top: -8px;"/></p>
+        <p class="icon">Battleship <img src="icon.png" width="40" height="40" style="position: absolute;margin-left: 10px;margin-top: -8px;"/></p>
     </div>
     <main id="page-game">
         <div class="actions" id="actions">
@@ -337,7 +376,7 @@
     <main id="page-leaderboard">
         <div class="leaderboard">
             <div class="leaderboard-nav">
-                <p class="leaderboard-nav-header">Ranks</p>
+                <p class="leaderboard-nav-header">Rank</p>
                 <p class="leaderboard-nav-header">Elo</p>
                 <p class="leaderboard-nav-header">Name</p>
                 <p class="leaderboard-nav-header">Wins</p>
@@ -346,7 +385,34 @@
         </div>
     </main>    
     <main id="page-account">
-        <div class="account-container"></div>
+        <div class="account-container">
+            <h1 style="text-align: center;font-size: 50px;margin-top: 70px;" id="account-name"></h1>
+            <div style="width: 100%;display: flex;">
+                <div style="width: 50%;">
+                    <p style="text-align: center;margin-bottom: 10px;color: rgb(199, 199, 199);">Wins</p>
+                    <h2 style="text-align: center;margin-top: 0px;" id="stat-wins"></h2>
+                </div>
+               
+                <div style="width: 50%;">
+                    <p style="text-align: center;margin-bottom: 10px;color: rgb(199, 199, 199);">Loses</p>
+                    <h2 style="text-align: center;margin-top: 0px;" id="stat-loses"></h2>
+                </div>
+            </div>
+            <div style="width: 100%;display: flex;">
+                <div style="width: 50%;">
+                    <p style="text-align: center;margin-bottom: 10px;color: rgb(199, 199, 199);">Elo</p>
+                    <h2 style="text-align: center;margin-top: 0px;"  id="stat-elo"></h2>
+                </div>
+               
+                <div style="width: 50%;">
+                    <p style="text-align: center;margin-bottom: 10px;color: rgb(199, 199, 199);">Hits</p>
+                    <h2 style="text-align: center;margin-top: 0px;"  id="stat-hits"></h2>
+                </div>
+            </div>
+            <div class="uuid-placeholder">
+                <p id="uuid-placeholder"></p>
+            </div>
+        </div>
     </main>
     <main id="page-ai">
         <div style="width:1000px; position: absolute; margin-left: -500px; left: 50%;">
@@ -467,7 +533,7 @@
                 if (parseInt(msg) != 400 && parseInt(msg) != 404) {
                     setCurrentGame(msg[0])
                     console.log(msg)
-                    document.querySelector('.boards').style.opacity = 1
+                    document.querySelector('#opponentBoard').style.opacity = 1
                     if (msg[1] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     }
@@ -483,7 +549,7 @@
                 if (msg[1] == getUUID()) {
                     console.log(msg[0])
                     setCurrentGame(msg[0])
-                    document.querySelector('.boards').style.opacity = 1
+                    document.querySelector('#opponentBoard').style.opacity = 1
                     if (msg[2] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     }
@@ -549,6 +615,13 @@
 
             socket.on('userDetails', (data) => {
                 name = data.name
+                console.log(data)
+                document.getElementById('stat-wins').innerHTML = data.win
+                document.getElementById('stat-loses').innerHTML = data.loses
+                document.getElementById('stat-elo').innerHTML = data.elo
+                document.getElementById('stat-hits').innerHTML = data.hits
+                document.getElementById('account-name').innerHTML = data.name
+                document.getElementById('uuid-placeholder').innerHTML = "UUID-"+getUUID();
             })
 
             socket.on('userCreated', (data) => {
@@ -615,12 +688,16 @@
         function createUser() {
             if (document.getElementById('username-input').value != "") {
                 if (document.getElementById('username-input').value.length > 3) {
-                    console.log("e")
-                    const uuid = getUUID()
-                    socket.emit('createAccount', {
-                        name: document.getElementById('username-input').value,
-                        uuid: uuid
-                    })
+                    if (document.getElementById('username-input').value.length < 21) {
+                        console.log("e")
+                        const uuid = getUUID()
+                        socket.emit('createAccount', {
+                            name: document.getElementById('username-input').value,
+                            uuid: uuid
+                        })
+                    } else {
+
+                    }
                 } else {
 
                 }
