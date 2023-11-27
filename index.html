@@ -358,8 +358,10 @@
             return currentGame;
         }
 
+        const shipAmount = 10;
+
         function generateRandomShips() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < shipAmount; i++) {
                 let randomU;
                 let x = true;
                 while (x == true) {

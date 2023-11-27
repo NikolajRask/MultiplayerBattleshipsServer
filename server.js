@@ -34,6 +34,46 @@ app.get('/src/app.js', (req, res) => {
     socket.on('requestPlayerCount', (uuid) => {
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)
     })
+
+    socket.on('createAccount', (details) => {
+      if (details.name != undefined) {
+        if (details.uuid != undefined) {
+          fs.readFile('./users.json', 'utf-8', (err, data) => {
+            const parsedData = JSON.parse(data)
+            if (parsedData['user'+uuid] == undefined) {
+              parsedData['user'+uuid] = {
+                name: details.name,
+                uuid: details.uuid,
+                elo: 1000,
+                win: 0,
+                loses: 0,
+                hits: 0,
+              }
+              fs.writeFile('./users.json', JSON.stringify(parsedData), (err) => {
+                if (err) throw err;
+                socket.emit('userCreated', {
+                  name: details.name,
+                  uuid: details.uuid,
+                  elo: 1000,
+                  win: 0,
+                  loses: 0,
+                  hits: 0,
+                })
+              })
+            } else {
+              socket.emit('userAlreadyExist', {})
+            }
+          })
+        }
+      }
+    })
+
+
+    socket.on('getUser', (uuid) => {
+      fs.readFile('./users.json', 'utf-8', (err, data) => {
+        socket.emit('userData', JSON.parse(data))
+      })
+    })
     
     socket.on('requestGame', (info) => {    
         fs.readFile('./games.json','utf-8', function (err, data) {
@@ -48,6 +88,7 @@ app.get('/src/app.js', (req, res) => {
         })
 
     })
+
 
     socket.on('joinGame', (msg) => {
         fs.readFile('./games.json','utf-8', function (err, data) {
