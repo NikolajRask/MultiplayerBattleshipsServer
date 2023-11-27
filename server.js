@@ -68,7 +68,7 @@ app.get('/src/app.js', (req, res) => {
                   parsedData.games["game"+msg[0]].turn = msg[1]
                 }
                 parsedData.games["game"+msg[0]].ships
-                fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error(err);})
+                fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error3(err);})
                 socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn]);
 
                 //change this for a direct message to the user who created the game
@@ -130,6 +130,16 @@ app.get('/src/app.js', (req, res) => {
               game: jsonData.games["game"+info[1]].id,
             })
 
+            //update ai memory
+
+            fs.readFile('./memory.json', 'utf-8', function (err, data) {
+              const parsedData = JSON.parse(data)
+
+              parsedData.target[parseInt(info[0])-1] = parsedData.target[parseInt(info[0])] + 1;
+
+              fs.writeFile('./memory.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
+            })
+
             const opponentShips = jsonData.games["game"+info[1]].ships2
             let hit = false;
             for (let i = 0; i < opponentShips.length; i++) {
@@ -178,6 +188,16 @@ app.get('/src/app.js', (req, res) => {
             socket.emit('moveSuccess', {
               move: info[0],
               game: jsonData.games["game"+info[1]].id,
+            })
+
+            //update ai memory
+
+            fs.readFile('./memory.json', 'utf-8', function (err, data) {
+              const parsedData = JSON.parse(data)
+            
+              parsedData.target[parseInt(info[0])-1] = parsedData.target[parseInt(info[0])] + 1;
+            
+              fs.writeFile('./memory.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
             })
 
             const opponentShips = jsonData.games["game"+info[1]].ships1
