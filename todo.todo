@@ -1,10 +1,6 @@
 -- Need to have --
-    - Test the shit out of the servers (make sure that a player cannot create a game join another and then a third player joins the first players first game)
-    - Stop game if player leaves 
-    - Add Equations to be solved *
+    - Test the shit out of the servers 
 
 -- Nice to have --
     - Add AI player
     - Add player chat
-    - Add login system with uuid 
-    - Place model ships

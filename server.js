@@ -37,6 +37,59 @@ app.get('/src/app.js', (req, res) => {
     socket.on('disconnect', (e) => {
       console.log("- "+socket.id)
       playersOnline--
+
+      fs.readFile('./games.json', 'utf-8', (err, dataAbout) => {
+        const parsedData = JSON.parse(dataAbout)
+
+        for (const key in parsedData.games) {
+          if (parsedData.games.hasOwnProperty(key)) {
+            if (parsedData.games[key].socket1 == socket.id) {
+              // player 1 has disconnected
+
+              socket.broadcast.emit('gameResigned', {
+                otherPlayer: parsedData.games[key].player2,
+                resigner: parsedData.games[key].player1,
+                game: parsedData.games[key].id,
+              });
+              fs.readFile('./users.json', 'utf-8', (err, userData) => {
+                let parsedJSONData = JSON.parse(userData)
+
+                parsedJSONData['user'+parsedData.games[key].player2].win++
+                parsedJSONData['user'+parsedData.games[key].player1].loses++
+                parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + 25
+                parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo - 25
+                parsedData.games[key] = undefined
+                fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
+                fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
+              })
+
+
+            }
+            if (parsedData.games[key].socket2 == socket.id) {
+              // player 2 has disconnected
+
+              socket.broadcast.emit('gameResigned', {
+                otherPlayer: parsedData.games[key].player1,
+                resigner: parsedData.games[key].player2,
+                game: parsedData.games[key].id,
+              });
+              fs.readFile('./users.json', 'utf-8', (err, userData) => {
+                let parsedJSONData = JSON.parse(userData)
+
+                parsedJSONData['user'+parsedData.games[key].player1].win++
+                parsedJSONData['user'+parsedData.games[key].player2].loses++
+                parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo + 25
+                parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo - 25
+                parsedData.games[key] = undefined
+                fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
+                fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
+              })
+
+            }
+          }
+        }
+      })
+
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)
       console.log('An user disconnected');
     });
@@ -94,9 +147,13 @@ app.get('/src/app.js', (req, res) => {
     socket.on('requestUsers', (data) => {
       if (data.uuid != undefined) {
         fs.readFile('./users.json', 'utf-8', (err, userData) => {
-          const jsonData = JSON.parse(userData);
+          try {
+            const jsonData = JSON.parse(userData);
   
-          socket.emit('users', jsonData)
+            socket.emit('users', jsonData)
+          } catch (e) {
+            console.log(e)
+          }
         })
       }
     })
@@ -136,10 +193,16 @@ app.get('/src/app.js', (req, res) => {
       })
     })
     
+    const CHARS = [1,2,3,4,5,6,7,8,9,0,1,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    const idLength = 8;
+
     socket.on('requestGame', (info) => {    
         fs.readFile('./games.json','utf-8', function (err, data) {
             const parsedData = JSON.parse(data)
-            const id =  Math.floor(Math.random() * 10000000)
+            let id = '';
+            for (let i = 0; i < idLength;i++) {
+              id = id + CHARS[Math.floor(Math.random()*CHARS.length)]
+            }
             const d = new Date()
             fs.readFile('./users.json','utf-8', function (err2, data2) {
               parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0, name1: JSON.parse(data2)["user"+info[0]].name, name2: "", socket1: socket.id, socket2: ''}
@@ -161,6 +224,15 @@ app.get('/src/app.js', (req, res) => {
                 return;
               }
               if (msg[1] != parsedData.games["game"+msg[0]].createdBy) {
+
+                for (const key in parsedData.games) {
+                  if (parsedData.games.hasOwnProperty(key)) {
+                    if (parsedData.games[key].createdBy == msg[1]) {
+                      parsedData.games[key] = undefined
+                    }
+                  }
+                }
+
                 parsedData.games["game"+msg[0]].player2 = msg[1]
                 parsedData.games["game"+msg[0]].ongoing = true;
                 parsedData.games["game"+msg[0]].ships2 = msg[2]

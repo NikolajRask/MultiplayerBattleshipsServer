@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BattleShip</title>
+    <title>BattleMath</title>
     <link rel="icon" type="image/png" href="./icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -492,6 +492,57 @@
             cursor: pointer;
         }
 
+        #messageBox {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            max-height: 250px;
+            width: 200px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+        }
+
+        #messageTitle {
+            color: white;
+            margin-bottom: 0px;
+            margin-top: 0px;
+        }
+
+        #message {
+            color: white;
+            margin-top: 10px;
+            margin-bottom: 0px;
+            font-size: 10px;
+        }
+
+        #errorMessage {
+            margin-left: 55.5px;
+            margin-top: 105px;
+            color: rgb(242, 54, 54);
+        }
+
+        .footer {
+            width: 100vw;
+            height: 25px;
+            position: fixed;
+            bottom: 0px;
+            background: rgba(0,0,0,0.65);
+        }
+
+        .footer-item {
+            margin-top: 5px;
+            font-size: 12px;
+            color: rgb(236, 236, 236);
+            margin-left: 30px;
+            text-decoration: underline;
+            cursor: pointer;
+            float: left;
+        }
+
     </style>
 </head>
 <body>
@@ -501,7 +552,15 @@
         <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
-        <p class="icon">Battleship <img src="icon.png" width="40" height="40" style="position: absolute;margin-left: 10px;margin-top: -8px;"/></p>
+        <p class="icon">BattleMath <img src="icon.png" width="40" height="40" style="position: absolute;margin-left: 10px;margin-top: -8px;"/></p>
+    </div>
+    <div id="messageBox">
+        <h3 id="messageTitle"></h3>
+        <p id="message"></p>
+    </div>
+    <div class="footer">
+        <p class="footer-item">How To Play</p>
+        <p class="footer-item">Rules</p>
     </div>
     <main id="page-game">
         <div class="actions" id="actions">
@@ -611,10 +670,11 @@
     <div class="overlay" id="overlay"></div>
     <div class="modal" id="accountModal">
         <h1>Hey! We don't know you yet?</h1>
-        <input placeholder="@yourhandle" id="username-input" class="name-input">
+        <input placeholder="Your Nickname" id="username-input" class="name-input">
         <div onClick="createUser()" class="continue-btn">
             <p>Continue</p>
         </div>
+        <p id="errorMessage"></p>
     </div>
     <script>
         let currentGame;
@@ -835,7 +895,8 @@
 
             socket.on('userAlreadyExist', (data) => {
                 makeUUID();
-                //give error message
+                document.getElementById("username-input").style.border = "2px solid rgb(242, 54, 54)"
+                document.getElementById('errorMessage').innerHTML = "Something went wrong, please try again"
             })
  
 
@@ -897,6 +958,7 @@
                         document.getElementById('equationBox').style.display = "none"
                         endGame();
                         socket.emit('getUser', getUUID())
+                        sendMessage("Resigned", "The other player has resigned or disconnected")
                         createLeaderboard()
                     }
                 }
@@ -979,7 +1041,6 @@
             if (document.getElementById('username-input').value != "") {
                 if (document.getElementById('username-input').value.length > 3) {
                     if (document.getElementById('username-input').value.length < 21) {
-                        console.log("e")
                         const uuid = getUUID()
                         socket.emit('createAccount', {
                             name: document.getElementById('username-input').value,
@@ -992,13 +1053,16 @@
                         document.getElementById('account-name').innerHTML = document.getElementById('username-input').value
                         document.getElementById('uuid-placeholder').innerHTML = "UUID-"+uuid;
                     } else {
-
+                        document.getElementById("username-input").style.border = "2px solid rgb(242, 54, 54)"
+                        document.getElementById('errorMessage').innerHTML = "Nickname needs to be longer than 20 characters"
                     }
                 } else {
-
+                    document.getElementById("username-input").style.border = "2px solid rgb(242, 54, 54)"
+                    document.getElementById('errorMessage').innerHTML = "Nickname needs to be at least 4 characters long"
                 }
             } else {
-
+                document.getElementById("username-input").style.border = "2px solid rgb(242, 54, 54)"
+                document.getElementById('errorMessage').innerHTML = "You forgot to tell us your Nickname"
             }
         }
 
@@ -1018,7 +1082,7 @@
         }
 
         function makeUUID() {
-            const UUID = Math.floor(Math.random() * 10000000000)
+            const UUID = Math.floor(Math.random() * 10000000000000)
             localStorage.setItem('uuid',UUID);
         }
 
@@ -1099,8 +1163,21 @@
             return board;
         }
 
-        function sendMessage(message, color) {
+        function sendMessage(title, message, timeout=7000) {
+            document.getElementById('messageBox').style.opacity = 1;
+            document.getElementById('messageTitle').innerHTML = title;
+            document.getElementById('message').innerHTML = message
+            window.setTimeout(() => {
+                hideMessage()
+            }, timeout)
+        }
 
+        function hideMessage() {
+            document.getElementById('messageBox').style.opacity = 0;
+            window.setTimeout(() => {
+                document.getElementById('messageTitle').innerHTML = "";
+                document.getElementById('message').innerHTML = "";
+            },1100)
         }
 
         function randomizeShips(x) {
@@ -1128,6 +1205,7 @@
         }
 
         socket.on('users', (users) => {
+            document.getElementById('leaderboard-container').innerHTML = ""
             let leaderboard = [];
             for (const key in users) {
                 if (users.hasOwnProperty(key)) {
