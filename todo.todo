@@ -1,11 +1,12 @@
 -- Need to have --
-    - Fix Turn Server Crash Error
-    - Make game winnable and update player stats
+    - Fix Turn Server Crash Error *
+    - Make game winnable and update player stats 
     - Test the shit out of the servers
     - Get Leaderboard to work
     - Stop game if player leaves
     - Add Equations to be solved
     - Make navbar reponsive and other content aswell if posible
+    - Change hit projectory
 
 -- Nice to have --
     - Add AI player

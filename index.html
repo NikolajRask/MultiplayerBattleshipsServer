@@ -14,6 +14,7 @@
             margin: 0px;
             font-family: 'Inter', sans-serif;
             background: url('./background.webp');
+            background-size: cover;
         }
 
         .block {
@@ -341,6 +342,34 @@
             text-align: center;
         }
 
+        .equationBox {
+            width: 250px;
+            height: 150px;
+            background: white;
+            position: absolute;
+            margin-left: 675px;
+            z-index: 9;
+            margin-top: 125px;
+            border-radius: 7px;
+            box-shadow: 1px 1px 3px 2px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .math {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .math-input {
+            width: 130px;
+            padding: 10px;
+            font-size: 14px;
+            margin-left: 50px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -375,6 +404,10 @@
         <div class="boards">
             <div id="board" style="width: 400px; height: 400px;">
                     
+            </div>
+            <div class="equationBox" id="equationBox">
+                <p class="math">x*10 = 4</p>
+                <input class="math-input" id="math-input" placeholder="Answer">
             </div>
             <div id="opponentBoard" style="width: 400px; height: 400px;">
                 
@@ -447,7 +480,9 @@
     </div>
     <script>
         let currentGame;
-
+        let useEqations = true;
+        let currentAnswer = 10;
+        let attackEnabled = false;
         let name;
 
         if (localStorage.getItem('currentPage') == null) {
@@ -519,6 +554,7 @@
 
             socket.on('moveSuccess', (data) => {
                 if (data.game == getCurrentGame()) {
+                    attackEnabled = false;
                     document.getElementById('oBlock-'+data.move).style.background = "black"
                     document.getElementById('opponentBoard').style.opacity = '0.3'
                 }
@@ -541,9 +577,11 @@
                 if (parseInt(msg) != 400 && parseInt(msg) != 404) {
                     setCurrentGame(msg[0])
                     console.log(msg)
-                    document.querySelector('#opponentBoard').style.opacity = 1
+                    document.querySelector('#opponentBoard').style.opacity = "0.3"
                     if (msg[1] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
+                    } else {
+                        document.getElementById('equationBox').style.display = "block"
                     }
                     document.getElementById('actions').style.display = "none"
                     document.getElementById('gameInfo').style.display = "block"
@@ -557,9 +595,11 @@
                 if (msg[1] == getUUID()) {
                     console.log(msg[0])
                     setCurrentGame(msg[0])
-                    document.querySelector('#opponentBoard').style.opacity = 1
+                    document.querySelector('#opponentBoard').style.opacity = "0.3"
                     if (msg[2] != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
+                    } else {
+                        document.getElementById('equationBox').style.display = "block"
                     }
                     document.getElementById('actions').style.display = "none"
                     document.getElementById('gameInfo').style.display = "block"
@@ -575,7 +615,8 @@
                     if (move[1] == getUUID()) {
                         document.getElementById("block-"+move[2]).style.background = "red"
                         if (move[3] == false) {
-                            document.getElementById('opponentBoard').style.opacity = '1'
+                            document.getElementById('opponentBoard').style.opacity = '0.3'
+                            document.getElementById('equationBox').style.display = "block"
                         }
                     }
                 }
@@ -588,7 +629,8 @@
                     if (move[1] == getUUID()) {
                         document.getElementById("block-"+move[2]).style.background = "red"
                         if (move[3] == false) {
-                            document.getElementById('opponentBoard').style.opacity = '1'
+                            document.getElementById('equationBox').style.display = "block"
+                            document.getElementById('opponentBoard').style.opacity = '0.3'
                         }
                     }
                 }
@@ -603,11 +645,11 @@
 
             socket.on('gameEnded', (data) => {
                 if (data.game == getCurrentGame()) {
-                    if (data.winner == getUUID()) {
+                    if (data.winner == getUUID()) { //This Client Won
                         window.alert("You Won")
                         endGame();
                     }
-                    if (data.loser == getUUID()) {
+                    if (data.loser == getUUID()) { // This Client Lost
                         window.alert("You Lost")
                         endGame();
                     }
@@ -636,6 +678,37 @@
                 name = data.name
                 document.getElementById('accountModal').style.display = "none"
                 document.getElementById('overlay').style.display = "none"
+            })
+
+            socket.on('yourMovedSkipped', (data) => {
+                window.alert("Move Wasted")
+                document.getElementById('equationBox').style.display = "none"
+                document.getElementById('opponentBoard').style.opacity = '0.3'
+            })
+
+            socket.on('opponentMovedSkipped', (data) => {
+                if (getCurrentGame() == data.game) {
+                    if (getUUID() == data.player) {
+                        document.getElementById('equationBox').style.display = "block"
+                        document.getElementById('opponentBoard').style.opacity = '1'
+                    }
+                }
+            })
+
+            document.getElementById('math-input').addEventListener('change', () => {
+                const uuidC = getUUID();
+                const gameC = getCurrentGame()
+                if (parseInt(document.getElementById('math-input').value) == currentAnswer) { // Correct Answer
+                    window.alert("Correct, Now Shoot")
+                    attackEnabled = true;
+                    document.getElementById('equationBox').style.display = "block"
+                    document.getElementById('opponentBoard').style.opacity = '1'
+                } else { // Wrong Answer
+                    socket.emit('wasteMove', {
+                        game: gameC,
+                        player: uuidC,
+                    })
+                }
             })
 
         })
@@ -724,8 +797,10 @@
 
         function attack(x) {
             if (getCurrentGame() != undefined) {
-                socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
-                
+                if (attackEnabled) {
+                    socket.emit('makeMove',[x, getCurrentGame(), getUUID()])
+                    document.getElementById('equationBox').style.display = "none"
+                }
             }
         }   
 
@@ -813,6 +888,10 @@
             }
 
             return board;
+        }
+
+        function sendMessage(message, color) {
+
         }
 
         function randomizeShips(x) {

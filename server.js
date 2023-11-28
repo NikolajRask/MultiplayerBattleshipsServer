@@ -169,7 +169,9 @@ app.get('/src/app.js', (req, res) => {
 
         fs.readFile('./games.json','utf-8', function (err, data) {
           let jsonData = JSON.parse(data)
-
+          if (jsonData.games["game"+info[1]] == undefined) {
+            return;
+          }
           if (jsonData.games["game"+info[1]].turn != info[2]) {
             return;
           }
@@ -188,15 +190,6 @@ app.get('/src/app.js', (req, res) => {
               game: jsonData.games["game"+info[1]].id,
             })
 
-            //update ai memory
-
-            fs.readFile('./memory.json', 'utf-8', function (err, data) {
-              const parsedData = JSON.parse(data)
-
-              parsedData.target[parseInt(info[0])-1] = parsedData.target[parseInt(info[0])] + 1;
-
-              fs.writeFile('./memory.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
-            })
 
             const opponentShips = jsonData.games["game"+info[1]].ships2
             let hit = false;
@@ -207,26 +200,38 @@ app.get('/src/app.js', (req, res) => {
             }
             jsonData.games["game"+info[1]].moves1.push(parseInt(info[0]))
             if (hit == true) {
-              jsonData.games["game"+info[1]].sunk1++;
-              if (jsonData.games["game"+info[1]].sunk1 >= 20) {
-                socket.broadcast.emit('gameEnded', {
-                  winner: jsonData.games["game"+info[1]].player1,
-                  loser: jsonData.games["game"+info[1]].player2,
-                  game: jsonData.games["game"+info[1]].id,
-                  move: info[0]
-                });
-                socket.emit('gameEnded', {
-                  winner: jsonData.games["game"+info[1]].player1,
-                  loser: jsonData.games["game"+info[1]].player2,
-                  game: jsonData.games["game"+info[1]].id,
-                  move: info[0]
-                })
-                jsonData.games["game"+info[1]] = undefined;
-                fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
-                return;
-              } else {
-                socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
-              }
+              fs.readFile('./users.json', 'utf-8', (err, userData) => {
+                let parsedJSONData = JSON.parse(userData)
+                parsedJSONData['user'+jsonData.games["game"+info[1]].player1].hits++
+
+                jsonData.games["game"+info[1]].sunk1++;
+
+                if (jsonData.games["game"+info[1]].sunk1 >= 3) {
+                  socket.broadcast.emit('gameEnded', {
+                    winner: jsonData.games["game"+info[1]].player1,
+                    loser: jsonData.games["game"+info[1]].player2,
+                    game: jsonData.games["game"+info[1]].id,
+                    move: info[0]
+                  });
+                  socket.emit('gameEnded', {
+                    winner: jsonData.games["game"+info[1]].player1,
+                    loser: jsonData.games["game"+info[1]].player2,
+                    game: jsonData.games["game"+info[1]].id,
+                    move: info[0]
+                  })
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].win++
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].loses++
+                  jsonData.games["game"+info[1]] = undefined;
+                  fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                  fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
+                  
+                  return;
+                } else {
+                  socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player1,info[0]])
+                  fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                }
+                fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
+              })
             } else {
               jsonData.games["game"+info[1]].turn = jsonData.games["game"+info[1]].player2
             }
@@ -247,16 +252,6 @@ app.get('/src/app.js', (req, res) => {
               game: jsonData.games["game"+info[1]].id,
             })
 
-            //update ai memory
-
-            fs.readFile('./memory.json', 'utf-8', function (err, data) {
-              const parsedData = JSON.parse(data)
-            
-              parsedData.target[parseInt(info[0])-1] = parsedData.target[parseInt(info[0])] + 1;
-            
-              fs.writeFile('./memory.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
-            })
-
             const opponentShips = jsonData.games["game"+info[1]].ships1
             let hit = false;
             for (let i = 0; i < opponentShips.length; i++) {
@@ -267,26 +262,35 @@ app.get('/src/app.js', (req, res) => {
             }
             jsonData.games["game"+info[1]].moves2.push(parseInt(info[0]))
             if (hit == true) {
-              jsonData.games["game"+info[1]].sunk2++;
-              if (jsonData.games["game"+info[1]].sunk2 >= 20) {
-                socket.broadcast.emit('gameEnded', {
-                  winner: jsonData.games["game"+info[1]].player2,
-                  loser: jsonData.games["game"+info[1]].player1,
-                  game: jsonData.games["game"+info[1]].id,
-                  move: info[0]
-                })
-                socket.emit('gameEnded', {
-                  winner: jsonData.games["game"+info[1]].player2,
-                  loser: jsonData.games["game"+info[1]].player1,
-                  game: jsonData.games["game"+info[1]].id,
-                  move: info[0]
-                })
-                jsonData.games["game"+info[1]] = undefined;
-                fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
-                return;
-              } else {
-                socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
-              }
+              fs.readFile('./users.json', 'utf-8', (err, userData) => {
+                let parsedJSONData = JSON.parse(userData)
+                parsedJSONData['user'+jsonData.games["game"+info[1]].player2].hits++
+                jsonData.games["game"+info[1]].sunk2++;
+                if (jsonData.games["game"+info[1]].sunk2 >= 3) {
+                  socket.broadcast.emit('gameEnded', {
+                    winner: jsonData.games["game"+info[1]].player2,
+                    loser: jsonData.games["game"+info[1]].player1,
+                    game: jsonData.games["game"+info[1]].id,
+                    move: info[0]
+                  })
+                  socket.emit('gameEnded', {
+                    winner: jsonData.games["game"+info[1]].player2,
+                    loser: jsonData.games["game"+info[1]].player1,
+                    game: jsonData.games["game"+info[1]].id,
+                    move: info[0]
+                  })
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].win++
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].loses++
+                  jsonData.games["game"+info[1]] = undefined;
+                  fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                  fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
+                  return;
+                } else {
+                  socket.emit('hitTrue', [info[1],jsonData.games["game"+info[1]].player2,info[0]])
+                  fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
+                } 
+                fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})            
+              })
             }else {
               jsonData.games["game"+info[1]].turn = jsonData.games["game"+info[1]].player1
             }
