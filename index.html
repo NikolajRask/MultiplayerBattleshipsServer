@@ -104,6 +104,7 @@
             color: white;
             background: rgba(0,0,0,0.35);
             margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .btn:hover {
@@ -125,31 +126,43 @@
             margin-top: 39px;
             padding: 10px;
             outline: none;
-            border: 2px solid black;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.25);
             border-radius: 5px;
             border-top-right-radius: 0px;
             border-bottom-right-radius: 0px;
-            border-right: none;
             margin-right: 0px;
+            color: white;
         }
 
         .joinBtn {
             margin: 0px;
             margin-left: -5px;
-            padding: 11.5px;
+            padding: 10px;
             border: none;
-            background: rgb(242, 49, 10);
+            background: rgba(0,0,0,0.35);
             color: white;
             margin-top: 18px;
             border-top-right-radius: 5px;
             border-bottom-right-radius: 5px;
             cursor: pointer;
-            padding-left: 18px;
-            padding-right: 19px;
+            padding-left: 17px;
+            padding-right: 17px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
+        .input::placeholder {
+            color: white;
+            opacity: 1; 
+        }
+
+        .input::-ms-input-placeholder {
+            color: white;
+        }
+
+
         .joinBtn:hover {
-            background: rgba(242, 49, 10,0.85);
+            background: rgba(0,0,0,0.45);
         }
 
         .gameIdContainer {
@@ -284,11 +297,11 @@
         }
 
         #gameInfo {
-            display: block;
+            display: none;
         }
 
         #actions {
-            display: none;
+            display: block;
         }
 
         .playerName {
@@ -305,7 +318,7 @@
             font-size: 13px;
             letter-spacing: 2px;
             font-weight: 300;
-            color: rgb(221, 221, 221);
+            color: rgb(255, 255, 255);
             margin-top: 10px;
         }
 
@@ -355,35 +368,63 @@
         .equationBox {
             width: 250px;
             height: 150px;
-            background: white;
+            background: rgba(0,0,0,0.455);
             position: absolute;
             margin-left: 675px;
             z-index: 9;
             margin-top: 125px;
             border-radius: 7px;
-            box-shadow: 1px 1px 3px 2px rgba(0,0,0,0.2);
             display: none;
         }
 
         .leaderboard-container {
             min-height: 100px;
             max-height: calc(100vh - 400px);
-            overflow-y: auto;
+            overflow-y: scroll;
+            -ms-overflow-style: none;  
+            scrollbar-width: none; 
         }
+
+        .leaderboard-container::-webkit-scrollbar {
+            display: none;
+        }
+
 
         .math {
             text-align: center;
             font-weight: bold;
             margin-top: 25px;
+            color: white;
         }
 
         .math-input {
-            width: 130px;
+            width: 100px;
             padding: 10px;
+            padding-left: 40px;
             font-size: 14px;
             margin-left: 50px;
             margin-top: 10px;
             border-radius: 5px;
+            outline: none;
+            background: rgba(0,0,0,0.25);
+            color: white;
+            border: 1px solid white;
+        }
+        
+        .math-placeholder {
+            color: white;
+            position: absolute;
+            margin-left: 60px;
+            margin-top: 19px;
+        }
+
+        .math-input::placeholder {
+            color: white;
+            opacity: 1; 
+        }
+
+        .math-input::-ms-input-placeholder { 
+            color: white;
         }
 
         .leaderboard-row {
@@ -442,6 +483,15 @@
         }
 
 
+        .leaveSvg {
+            width: 22px;
+            height: 22px;
+            position: absolute;
+            margin-top: 96px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -467,12 +517,13 @@
         </div>
         <div class="actions" id="gameInfo">
             <div class="actionSection" style="position: absolute;">
-                <p class="playerName" id="player1">Player 1</p>
-                <p class="playerElo" id="player1Elo">950 (-25)</p>
+                <svg alt="disconnect" class="leaveSvg" onClick="disconnect()" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-door-exit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 12v.01" /><path d="M3 21h18" /><path d="M5 21v-16a2 2 0 0 1 2 -2h7.5m2.5 10.5v7.5" /><path d="M14 7h7m-3 -3l3 3l-3 3" /></svg>
+                <p class="playerName" id="player1"></p>
+                <p class="playerElo" id="player1Elo"></p>
             </div>
             <div class="actionSection" style="position: absolute;margin-left: 600px;">
-                <p class="playerName" id="player2">Player 1</p>
-                <p class="playerElo" id="player2Elo">1025 (+25)</p>
+                <p class="playerName" id="player2"></p>
+                <p class="playerElo" id="player2Elo"></p>
             </div>
         </div>
         <div class="boards">
@@ -480,8 +531,18 @@
                     
             </div>
             <div class="equationBox" id="equationBox">
-                <p class="math">x*10 = 4</p>
-                <input class="math-input" id="math-input" placeholder="Answer">
+                <p class="math" id="math">
+
+                </p>
+                <p class="math-placeholder">
+                    <math xmlns = "http://www.w3.org/1998/Math/MathML">
+                        <mrow>
+                            <mi>x</mi>
+                            <mo> = </mo>
+                         </mrow>
+                    </math>
+                </p>
+                <input class="math-input" id="math-input" placeholder="">
             </div>
             <div id="opponentBoard" style="width: 400px; height: 400px;">
                 
@@ -558,7 +619,7 @@
     <script>
         let currentGame;
         let useEqations = true;
-        let currentAnswer = 10;
+        let currentAnswer;
         let attackEnabled = false;
         let name;
 
@@ -633,7 +694,7 @@
             socket.on('moveSuccess', (data) => {
                 if (data.game == getCurrentGame()) {
                     attackEnabled = false;
-                    document.getElementById('oBlock-'+data.move).style.background = "black"
+                    document.getElementById('oBlock-'+data.move).style.background = "rgba(0,0,0,0.4)"
                     document.getElementById('opponentBoard').style.opacity = '0.3'
                 }
             })
@@ -651,49 +712,65 @@
 
 
             //When you join a game
-            socket.on('gameJoinedID', (msg) => {
-                if (parseInt(msg) != 400 && parseInt(msg) != 404) {
-                    setCurrentGame(msg[0])
-                    console.log(msg)
+            socket.on('gameJoinedID', (data) => {
+                if (parseInt(data) != 400 && parseInt(data) != 404) {
+                    setCurrentGame(data.id)
                     document.querySelector('#opponentBoard').style.opacity = "0.3"
-                    if (msg[1] != getUUID()) {
+                    if (data.turn != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     } else {
+                        generateNewEquation()
                         document.getElementById('equationBox').style.display = "block"
                     }
                     document.getElementById('actions').style.display = "none"
                     document.getElementById('gameInfo').style.display = "block"
-                    document.getElementById('player1').innerHTML = msg[2]
-                    document.getElementById('player2').innerHTML = msg[3]
+                    document.getElementById('player1').style.color = "white"
+                    document.getElementById('player2').style.color = "white"
+                    document.getElementById('player2Elo').style.color = "white"
+                    document.getElementById('player1Elo').style.color = "white"
+                    document.getElementById('player1').innerHTML = data.player2
+                    document.getElementById('player2').innerHTML = data.player1
+                    document.getElementById('player2Elo').innerHTML = data.elo1
+                    document.getElementById('player1Elo').innerHTML = data.elo2
                 }
             })
 
             // When someone joins your game
-            socket.on('yourGameJoined', (msg) => {
-                if (msg[1] == getUUID()) {
-                    console.log(msg[0])
-                    setCurrentGame(msg[0])
+            socket.on('yourGameJoined', (data) => {
+                if (data.createdBy == getUUID()) {
+                    setCurrentGame(data.id)
                     document.querySelector('#opponentBoard').style.opacity = "0.3"
-                    if (msg[2] != getUUID()) {
+                    if (data.turn != getUUID()) {
                         document.getElementById('opponentBoard').style.opacity = '0.3'
                     } else {
+                        generateNewEquation()
                         document.getElementById('equationBox').style.display = "block"
                     }
                     document.getElementById('actions').style.display = "none"
                     document.getElementById('gameInfo').style.display = "block"
-                    document.getElementById('player1').innerHTML = msg[3]
-                    document.getElementById('player2').innerHTML = msg[4]
+                    document.getElementById('player1').style.color = "white"
+                    document.getElementById('player2').style.color = "white"
+                    document.getElementById('player2Elo').style.color = "white"
+                    document.getElementById('player1Elo').style.color = "white"
+                    document.getElementById('player1').innerHTML = data.player1
+                    document.getElementById('player2').innerHTML = data.player2
+                    document.getElementById('player2Elo').innerHTML = data.elo2
+                    document.getElementById('player1Elo').innerHTML = data.elo1
                 }
             })
 
             socket.on('opponentMove2', (move) => {
-                console.log(move)
                 if (move[0] == getCurrentGame()) {
-                    console.log(move)
                     if (move[1] == getUUID()) {
-                        document.getElementById("block-"+move[2]).style.background = "red"
+                        console.log(document.getElementById("block-"+move[2]).style.background)
+                        if (document.getElementById("block-"+move[2]).style.background == "") {
+                            document.getElementById("block-"+move[2]).style.background = "rgba(0,0,0,0.3)"
+                        } else {
+                            document.getElementById("block-"+move[2]).style.background = "rgba(245, 69,66, 0.6)"
+                        }
                         if (move[3] == false) {
                             document.getElementById('opponentBoard').style.opacity = '0.3'
+                            generateNewEquation()
                             document.getElementById('equationBox').style.display = "block"
                         }
                     }
@@ -701,12 +778,16 @@
             })
 
             socket.on('opponentMove1', (move) => {
-                console.log(move)
                 if (move[0] == getCurrentGame()) {
-                    console.log(move)
                     if (move[1] == getUUID()) {
-                        document.getElementById("block-"+move[2]).style.background = "red"
+                        console.log(document.getElementById("block-"+move[2]).style.background)
+                        if (document.getElementById("block-"+move[2]).style.background == "") {
+                            document.getElementById("block-"+move[2]).style.background = "rgba(0,0,0,0.3)"
+                        } else {
+                            document.getElementById("block-"+move[2]).style.background = "rgba(245, 69,66, 0.6)"
+                        }
                         if (move[3] == false) {
+                            generateNewEquation()
                             document.getElementById('equationBox').style.display = "block"
                             document.getElementById('opponentBoard').style.opacity = '0.3'
                         }
@@ -716,21 +797,37 @@
 
             socket.on('hitTrue', (data) => {
                 if (data[1] == getUUID()) {
-                    document.getElementById("oBlock-"+data[2]).style.background = "orange"
+                    document.getElementById("oBlock-"+data[2]).style.background = "rgba(245, 69,66, 0.4)"
                     document.getElementById('opponentBoard').style.opacity = '0.3'
+                    generateNewEquation()
                     document.getElementById('equationBox').style.display = "block"
+                    socket.emit('getUser', getUUID())
                 }
             })
 
             socket.on('gameEnded', (data) => {
                 if (data.game == getCurrentGame()) {
                     if (data.winner == getUUID()) { //This Client Won
-                        window.alert("You Won")
+                        document.getElementById('player1Elo').innerHTML = "Winner"
+                        document.getElementById('player2Elo').innerHTML = "Loser"
+                        document.getElementById('player1Elo').style.color = "green"
+                        document.getElementById('player2Elo').style.color = "red"
+                        document.getElementById('player1').style.color = "green"
+                        document.getElementById('player2').style.color = "red"
                         endGame();
+                        socket.emit('getUser', getUUID())
+                        createLeaderboard()
                     }
                     if (data.loser == getUUID()) { // This Client Lost
-                        window.alert("You Lost")
+                        document.getElementById('player2Elo').innerHTML = "Winner"
+                        document.getElementById('player1Elo').innerHTML = "Loser"
+                        document.getElementById('player2Elo').style.color = "green"
+                        document.getElementById('player1Elo').style.color = "red"
+                        document.getElementById('player2').style.color = "green"
+                        document.getElementById('player1').style.color = "red"
                         endGame();
+                        socket.emit('getUser', getUUID())
+                        createLeaderboard()
                     }
                 }
             })
@@ -761,6 +858,7 @@
 
             socket.on('yourMovedSkipped', (data) => {
                 window.alert("Move Wasted")
+                
                 document.getElementById('equationBox').style.display = "none"
                 document.getElementById('opponentBoard').style.opacity = '0.3'
             })
@@ -768,8 +866,38 @@
             socket.on('opponentMovedSkipped', (data) => {
                 if (getCurrentGame() == data.game) {
                     if (getUUID() == data.player) {
+                        generateNewEquation()
                         document.getElementById('equationBox').style.display = "block"
                         document.getElementById('opponentBoard').style.opacity = '1'
+                    }
+                }
+            })
+
+            socket.on('gameResigned', (data) => {
+                if (getCurrentGame() == data.game) {
+                    if (data.resigner == getUUID()) { // this player has resigned
+                        document.getElementById('player2Elo').innerHTML = "Winner"
+                        document.getElementById('player1Elo').innerHTML = "Loser"
+                        document.getElementById('player2Elo').style.color = "green"
+                        document.getElementById('player1Elo').style.color = "red"
+                        document.getElementById('player2').style.color = "green"
+                        document.getElementById('player1').style.color = "red"
+                        document.getElementById('equationBox').style.display = "none"
+                        endGame();
+                        socket.emit('getUser', getUUID())
+                        createLeaderboard()
+                    }
+                    if (data.otherPlayer == getUUID()) { // the other player has resigned
+                        document.getElementById('player1Elo').innerHTML = "Winner"
+                        document.getElementById('player2Elo').innerHTML = "Loser"
+                        document.getElementById('player1Elo').style.color = "green"
+                        document.getElementById('player2Elo').style.color = "red"
+                        document.getElementById('player1').style.color = "green"
+                        document.getElementById('player2').style.color = "red"
+                        document.getElementById('equationBox').style.display = "none"
+                        endGame();
+                        socket.emit('getUser', getUUID())
+                        createLeaderboard()
                     }
                 }
             })
@@ -779,7 +907,7 @@
                 const gameC = getCurrentGame()
                 const inputValue = document.getElementById('math-input').value;
                 document.getElementById('math-input').value = ""
-                if (parseInt(inputValue) == currentAnswer) { // Correct Answer
+                if (parseFloat(inputValue).toFixed(1) == currentAnswer.toFixed(1)) { // Correct Answer
                     window.alert("Correct, Now Shoot")
                     attackEnabled = true;
                     document.getElementById('equationBox').style.display = "none"
@@ -1047,6 +1175,43 @@
         function endGame() {
             currentGame = undefined
         }
+
+        function disconnect() {
+            if (getCurrentGame() != undefined) {
+                const thisGame = getCurrentGame();
+                const id = getUUID();
+                socket.emit('resignGame', {
+                    game: thisGame,
+                    playerResigning: id,
+                })
+            }
+        }
+
+        function generateNewEquation() {
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            const a = getRandomInt(1, 10);
+            const b = getRandomInt(-10, 10);
+            const c = getRandomInt(-10, 10);
+
+            const x = (c - b) / a;
+            const equationMathML = `<math xmlns='http://www.w3.org/1998/Math/MathML'>
+                <mrow>
+                    <mrow><mn>${a}</mn><mo>×</mo><mi>x</mi></mrow>
+                    <mo>+</mo>
+                    <mn>${b}</mn>
+                    <mo>=</mo>
+                    <mn>${c}</mn>
+                </mrow>
+            </math>`;
+            currentAnswer = x;
+            document.getElementById('math').innerHTML = equationMathML
+            return { equationMathML, solution: x };
+        }
+
+        generateNewEquation();
 
     </script>
 </body>

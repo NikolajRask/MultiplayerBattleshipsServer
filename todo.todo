@@ -1,13 +1,10 @@
 -- Need to have --
-    - Make game winnable and update player stats 
-    - Test the shit out of the servers 
-    - Stop game if player leaves
+    - Test the shit out of the servers (make sure that a player cannot create a game join another and then a third player joins the first players first game)
+    - Stop game if player leaves 
     - Add Equations to be solved *
-    - Change hit projectory
 
 -- Nice to have --
     - Add AI player
-    - Make ships moveable
     - Add player chat
     - Add login system with uuid 
-    - Make Cheat Mode
+    - Place model ships

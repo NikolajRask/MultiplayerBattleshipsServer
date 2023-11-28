@@ -100,6 +100,41 @@ app.get('/src/app.js', (req, res) => {
         })
       }
     })
+
+    socket.on('resignGame', (data) => {
+      fs.readFile('./games.json', 'utf-8', (err, games) => {
+        const jsonGames = JSON.parse(games)
+        if (jsonGames.games["game"+data.game] != undefined) {
+          if (data.playerResigning == jsonGames.games["game"+data.game].player1 || data.playerResigning == jsonGames.games["game"+data.game].player2) {
+            let otherPlayer;
+            if (data.playerResigning == jsonGames.games["game"+data.game].player1) {otherPlayer =jsonGames.games["game"+data.game].player2} else {
+              otherPlayer = jsonGames.games["game"+data.game].player1
+            }
+
+            socket.emit('gameResigned', {
+              game: data.game,
+              resigner: data.playerResigning,
+              otherPlayer: otherPlayer 
+            })
+            socket.broadcast.emit('gameResigned', {
+              game: data.game,
+              resigner: data.playerResigning,
+              otherPlayer: otherPlayer 
+            })
+            fs.readFile('./users.json', 'utf-8', (err, useData) => {
+              const JSONUserData = JSON.parse(useData)
+              JSONUserData["user"+otherPlayer].win++
+              JSONUserData["user"+data.playerResigning].loses++
+              JSONUserData["user"+otherPlayer].elo = JSONUserData["user"+otherPlayer].elo + 25
+              JSONUserData["user"+data.playerResigning].elo = JSONUserData["user"+data.playerResigning].elo - 25
+              fs.writeFile('./users.json', JSON.stringify(JSONUserData), (err) => {if (err) throw err})
+            })
+            jsonGames.games["game"+data.game] = undefined
+            fs.writeFile('./games.json', JSON.stringify(jsonGames), (err) => {if (err) throw err})
+          }
+        }
+      })
+    })
     
     socket.on('requestGame', (info) => {    
         fs.readFile('./games.json','utf-8', function (err, data) {
@@ -145,10 +180,27 @@ app.get('/src/app.js', (req, res) => {
                   }
                   parsedData.games["game"+msg[0]].ships
                   fs.writeFile("./games.json", JSON.stringify(parsedData), (err) => {if (err) console.error3(err);})
-                  socket.emit('gameJoinedID', [msg[0], parsedData.games["game"+msg[0]].turn, parsedData.games["game"+msg[0]].name2, parsedData.games["game"+msg[0]].name1]);
-  
-                  //change this for a direct message to the user who created the game
-                  socket.broadcast.emit('yourGameJoined', [msg[0], parsedData.games["game"+msg[0]].createdBy, parsedData.games["game"+msg[0]].turn, parsedData.games["game"+msg[0]].name1, parsedData.games["game"+msg[0]].name2])
+                  fs.readFile("./users.json", 'utf-8', (err, da) => {
+                    socket.emit('gameJoinedID', {
+                      id: msg[0], 
+                      turn: parsedData.games["game"+msg[0]].turn, 
+                      player2: parsedData.games["game"+msg[0]].name2, 
+                      player1: parsedData.games["game"+msg[0]].name1,
+                      elo1: JSON.parse(da)["user"+parsedData.games["game"+msg[0]].player1].elo,
+                      elo2: JSON.parse(da)["user"+msg[1]].elo,
+                    });
+    
+                    //change this for a direct message to the user who created the game
+                    socket.broadcast.emit('yourGameJoined', {
+                      id: msg[0], 
+                      createdBy: parsedData.games["game"+msg[0]].createdBy, 
+                      turn: parsedData.games["game"+msg[0]].turn, 
+                      player1: parsedData.games["game"+msg[0]].name1, 
+                      player2: parsedData.games["game"+msg[0]].name2,
+                      elo1: JSON.parse(da)["user"+parsedData.games["game"+msg[0]].player1].elo,
+                      elo2: JSON.parse(da)["user"+parsedData.games["game"+msg[0]].player2].elo,
+                    })
+                  })
                 })
               } else {
                 socket.emit('gameJoinedID', '400');
@@ -238,7 +290,7 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].loses++
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo + 25
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo + 25
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo - 25
                   jsonData.games["game"+info[1]] = undefined;
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
