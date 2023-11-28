@@ -54,10 +54,13 @@ app.get('/src/app.js', (req, res) => {
               fs.readFile('./users.json', 'utf-8', (err, userData) => {
                 let parsedJSONData = JSON.parse(userData)
 
-                parsedJSONData['user'+parsedData.games[key].player2].win++
-                parsedJSONData['user'+parsedData.games[key].player1].loses++
-                parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + 25
-                parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo - 25
+                if (parsedJSONData['user'+parsedData.games[key].player2] != undefined) {
+                  parsedJSONData['user'+parsedData.games[key].player2].win++
+                  parsedJSONData['user'+parsedData.games[key].player1].loses++
+                  parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + 25
+                  parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo - 25
+                }
+
                 parsedData.games[key] = undefined
                 fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
                 fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})

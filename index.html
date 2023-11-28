@@ -792,6 +792,13 @@
                     document.getElementById('player2').innerHTML = data.player1
                     document.getElementById('player2Elo').innerHTML = data.elo1
                     document.getElementById('player1Elo').innerHTML = data.elo2
+                } else {
+                    if (parseInt(data) == 404) {
+                        sendMessage("Wrong code", "No game with the code you tried to input exists!")
+                    } 
+                    if (parseInt(data) == 400) {
+                        sendMessage("Tried to join own game", "You cannot join games that was created by you!")
+                    }
                 }
             })
 
@@ -1162,12 +1169,13 @@
 
             return board;
         }
-
+        let lastTimeout;
         function sendMessage(title, message, timeout=7000) {
+            clearTimeout(lastTimeout)
             document.getElementById('messageBox').style.opacity = 1;
             document.getElementById('messageTitle').innerHTML = title;
             document.getElementById('message').innerHTML = message
-            window.setTimeout(() => {
+            lastTimeout = window.setTimeout(() => {
                 hideMessage()
             }, timeout)
         }
