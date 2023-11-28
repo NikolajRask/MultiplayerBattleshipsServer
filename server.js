@@ -88,6 +88,16 @@ app.get('/src/app.js', (req, res) => {
         }
       })
     })
+
+    socket.on('requestUsers', (data) => {
+      if (data.uuid != undefined) {
+        fs.readFile('./users.json', 'utf-8', (err, userData) => {
+          const jsonData = JSON.parse(userData);
+  
+          socket.emit('users', jsonData)
+        })
+      }
+    })
     
     socket.on('requestGame', (info) => {    
         fs.readFile('./games.json','utf-8', function (err, data) {
@@ -221,6 +231,8 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].loses++
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo + 25
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo - 25
                   jsonData.games["game"+info[1]] = undefined;
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
                   fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
@@ -281,7 +293,9 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].loses++
-                  jsonData.games["game"+info[1]] = undefined;
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo - 25
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo + 25
+                  jsonData.games["game"+info[1]] = undefined
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
                   fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
                   return;

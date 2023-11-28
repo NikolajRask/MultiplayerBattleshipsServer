@@ -355,6 +355,12 @@
             display: none;
         }
 
+        .leaderboard-container {
+            min-height: 100px;
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+        }
+
         .math {
             text-align: center;
             font-weight: bold;
@@ -368,6 +374,41 @@
             margin-left: 50px;
             margin-top: 10px;
             border-radius: 5px;
+        }
+
+        .leaderboard-row {
+            width: 800px;
+            height: 50px;
+            display: flex;
+        }
+
+        .leaderboard-row > div:nth-of-type(1) {
+            width: 23%;
+        }
+
+        .leaderboard-row > div:nth-of-type(2) {
+            width: 21%;
+        }
+
+        .leaderboard-row > div:nth-of-type(3) {
+            width: 23.5%;
+        }
+
+        .leaderboard-row > div:nth-of-type(4) {
+            width: 23%;
+        }
+
+        .leaderboard-row > div:nth-of-type(5) {
+            width: 9.5%;
+        }
+
+        .leaderboard-row > div:nth-of-type(1) > p {
+            color: white;
+            font-weight: bold;
+        }
+
+        .leaderboard-row > div > p {
+            color: white;
         }
 
     </style>
@@ -422,6 +463,9 @@
                 <p class="leaderboard-nav-header">Name</p>
                 <p class="leaderboard-nav-header">Wins</p>
                 <p class="leaderboard-nav-header">Hits</p>
+            </div>
+            <div class="leaderboard-container" id="leaderboard-container">
+
             </div>
         </div>
     </main>    
@@ -519,6 +563,7 @@
         })
         socket.emit('requestPlayerCount', 0)
 
+        
         document.addEventListener('DOMContentLoaded', () => {
             
             if (localStorage.getItem('uuid') == null) {
@@ -639,7 +684,8 @@
             socket.on('hitTrue', (data) => {
                 if (data[1] == getUUID()) {
                     document.getElementById("oBlock-"+data[2]).style.background = "orange"
-                    document.getElementById('opponentBoard').style.opacity = '1'
+                    document.getElementById('opponentBoard').style.opacity = '0.3'
+                    document.getElementById('equationBox').style.display = "block"
                 }
             })
 
@@ -665,7 +711,7 @@
 
             socket.on('userDetails', (data) => {
                 name = data.name
-                console.log(data)
+
                 document.getElementById('stat-wins').innerHTML = data.win
                 document.getElementById('stat-loses').innerHTML = data.loses
                 document.getElementById('stat-elo').innerHTML = data.elo
@@ -698,10 +744,12 @@
             document.getElementById('math-input').addEventListener('change', () => {
                 const uuidC = getUUID();
                 const gameC = getCurrentGame()
-                if (parseInt(document.getElementById('math-input').value) == currentAnswer) { // Correct Answer
+                const inputValue = document.getElementById('math-input').value;
+                document.getElementById('math-input').value = ""
+                if (parseInt(inputValue) == currentAnswer) { // Correct Answer
                     window.alert("Correct, Now Shoot")
                     attackEnabled = true;
-                    document.getElementById('equationBox').style.display = "block"
+                    document.getElementById('equationBox').style.display = "none"
                     document.getElementById('opponentBoard').style.opacity = '1'
                 } else { // Wrong Answer
                     socket.emit('wasteMove', {
@@ -913,6 +961,43 @@
                 }
             }
         }
+
+        function createLeaderboard() {
+            socket.emit('requestUsers', {uuid: getUUID()})
+        }
+
+        socket.on('users', (users) => {
+            let leaderboard = [];
+            for (const key in users) {
+                if (users.hasOwnProperty(key)) {
+                    leaderboard.push(users[key])
+                }
+            }
+            leaderboard.sort((a, b) => b.elo - a.elo); // change hits to elo
+            for (let i = 0; i < leaderboard.length; i++) {
+                document.getElementById('leaderboard-container').innerHTML = document.getElementById('leaderboard-container').innerHTML + `
+                <div class="leaderboard-row">
+                    <div>
+                        <p>#${i+1}</p>
+                    </div>
+                    <div>
+                        <p>${leaderboard[i].elo}</p>
+                    </div>
+                    <div>
+                        <p>${leaderboard[i].name}</p>
+                    </div>
+                    <div>
+                        <p>${leaderboard[i].win}</p>
+                    </div>
+                    <div>
+                        <p>${leaderboard[i].hits}</p>
+                    </div>
+                </div>
+                `
+            }
+        })
+
+        createLeaderboard()
 
 
         randomizeShips(false)
