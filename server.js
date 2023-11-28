@@ -20,6 +20,22 @@ app.get('/icon.png', (req, res) => {
   res.sendFile(join(__dirname, 'icon.png'));
 })
 
+app.get('/index.css', (req, res) => {
+  res.sendFile(join(__dirname, 'css/index.css'));
+})
+
+app.get('/modal.css', (req, res) => {
+  res.sendFile(join(__dirname, 'css/modal.css'));
+})
+
+app.get('/socket', (req, res) => {
+  res.sendFile(join(__dirname, 'src/socket.js'));
+})
+
+app.get('/functions', (req, res) => {
+  res.sendFile(join(__dirname, 'src/functions.js'));
+})
+
 app.get('/background.webp', (req, res) => {
   res.sendFile(join(__dirname, 'background.webp'));
 })
@@ -137,12 +153,16 @@ app.get('/src/app.js', (req, res) => {
 
     socket.on('getUser', (uuid) => {
       fs.readFile('./users.json', 'utf-8', (err, data) => {
-        const jsonData = JSON.parse(data);
+        try {
+          const jsonData = JSON.parse(data);
 
-        if (jsonData['user'+uuid] != undefined) {
-          socket.emit('userDetails', jsonData['user'+uuid])
-        } else {
-          socket.emit('noUserFound', {})
+          if (jsonData['user'+uuid] != undefined) {
+            socket.emit('userDetails', jsonData['user'+uuid])
+          } else {
+            socket.emit('noUserFound', {})
+          } 
+        } catch (error) {
+          socket.emit('errorMessage', {title: "Something Went Wrong", message: "Something went wrong when the application was loaded, please reload your browser window."})
         }
       })
     })
@@ -199,7 +219,14 @@ app.get('/src/app.js', (req, res) => {
     const CHARS = [1,2,3,4,5,6,7,8,9,0,1,"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     const idLength = 8;
 
-    socket.on('requestGame', (info) => {    
+    socket.on('requestGame', (info) => { 
+        if (info[1].length != 20) {
+          socket.emit('errorMessage', {
+            title: "Something Went Wrong", 
+            message: "Your board was missing some ships, please try again."
+          })
+          return 
+        }
         fs.readFile('./games.json','utf-8', function (err, data) {
             const parsedData = JSON.parse(data)
             let id = '';
@@ -220,6 +247,13 @@ app.get('/src/app.js', (req, res) => {
 
 
     socket.on('joinGame', (msg) => {
+      if (msg[2].length != 20) {
+        socket.emit('errorMessage', {
+          title: "Something Went Wrong", 
+          message: "Your board was missing some ships, please try again."
+        })
+        return 
+      }
         fs.readFile('./games.json','utf-8', function (err, data) {
             const parsedData = JSON.parse(data)
             if (parsedData.games["game"+msg[0]] != undefined) {

@@ -1,0 +1,595 @@
+body {
+    margin: 0px;
+    font-family: 'Inter', sans-serif;
+    background: url('./background.webp');
+    background-size: 100vw 100vh;
+}
+
+.block {
+    border: 1px solid rgb(33, 33, 33);
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.15);
+}
+
+
+.block-2 {
+    border: 1px solid rgb(33, 33, 33);
+    background: rgba(255,255,255,0.15);
+    width: 40px;
+    height: 40px;
+}
+
+.block-2:hover {
+    background: rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.nav {
+    width: 100%;
+    height: 70px;
+    background: rgb(2,0,36);
+    background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%);
+}
+
+.nav > * {
+    color: white;
+}
+
+.playersOnline {
+    float: right;
+    margin-right: 50px;
+    margin-top: 25px;
+    color: rgb(205, 205, 205);
+}
+
+.icon {
+    margin-left: 50px;
+    position: absolute;
+    margin-top: 21px;
+    font-weight: bold;
+    font-size: 23px;
+
+}
+
+.boards {
+    display: flex;
+    width: 1000px;
+    position: absolute;
+    margin-left: -500px;
+    left: 50%;
+    margin-top: 125px;
+}
+
+#board {
+}
+
+#opponentBoard {
+    margin-left: 200px;
+    opacity: 0.2;
+}
+
+#ai-opponentBoard {
+    margin-left: 200px;
+}
+
+.actions {
+    width: 1000px;
+    margin-left: -500px;
+    left: 50%;
+    position: absolute;
+    display: flex;
+}
+
+.btn {
+    padding: 10px 20px 10px 20px;
+    width: 100%;
+    font-size: 15px;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background: rgba(0,0,0,0.35);
+    margin-top: 40px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn:hover {
+    background: rgba(0,0,0,0.4);;
+}
+
+.actionSection {
+    width: 400px;
+    height: 100px;
+}
+
+.actionSection:nth-of-type(2) {
+    margin-left: 200px;
+}
+
+.input {
+    width: 280px;
+    margin: 0px;
+    margin-top: 39px;
+    padding: 10px;
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.25);
+    border-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-right: 0px;
+    color: white;
+}
+
+.joinBtn {
+    margin: 0px;
+    margin-left: -5px;
+    padding: 10px;
+    border: none;
+    background: rgba(0,0,0,0.35);
+    color: white;
+    margin-top: 18px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    padding-left: 17px;
+    padding-right: 17px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.input::placeholder {
+    color: white;
+    opacity: 1; 
+}
+
+.input::-ms-input-placeholder {
+    color: white;
+}
+
+
+.joinBtn:hover {
+    background: rgba(0,0,0,0.45);
+}
+
+.gameIdContainer {
+    
+}
+
+.gameId {
+    text-align: center;
+    margin-top: 39px;
+    color: white;
+    user-select: all;
+}
+
+#copy-svg {
+    cursor: pointer;
+    margin-top: 7px;
+    margin-left: 10px;
+    width: 26px;
+    height: 26px;
+}
+
+.nav-item {
+    float: left;
+    margin-left: 50px;
+    margin-top: 25px;
+    font-weight: bold;
+}
+
+
+.nav-item:hover {
+    cursor: pointer;
+    color: rgb(196, 196, 196);
+}
+
+#gameIdPlaceholder {position: absolute;opacity: 0;}
+
+#page-game {display: none}
+
+#page-leaderboard {display: none}
+
+#page-account {display: none}
+
+#page-ai {display: none}
+
+
+
+/*leaderboard css*/
+
+.leaderboard {
+    width: 800px;
+    position: absolute;
+    margin-left: -450px;
+    left: 50%;
+    min-height: 100px;
+    padding-left: 50px;
+    padding-right: 50px;
+    margin-top: 70px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 10px;
+}
+
+.leaderboard-nav {
+    display: flex;
+    border-bottom: 1px solid rgb(255, 255, 255,0.4);
+}
+
+.leaderboard-nav-header {
+    font-weight: bold;
+    margin-right: 144px;
+    width: fit-content;
+    text-align: center;
+    color: rgb(226, 226, 226);
+}
+
+.overlay {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    background: rgba(0,0,0,0.5);
+    top: 0px;
+    display: none;
+}
+
+.modal {
+    width: 450px;
+    height: 600px;
+    background: white;
+    border-radius: 10px;
+    position: absolute;
+    z-index: 10;
+    margin-left: -225px;
+    left: 50%;
+    margin-top: -300px;
+    top: 50%;
+    display: none;
+}
+
+.modal-2 {
+    width: 550px;
+    height: 600px;
+    background: white;
+    border-radius: 10px;
+    position: absolute;
+    z-index: 10;
+    margin-left: -275px;
+    left: 50%;
+    margin-top: -300px;
+    top: 50%;
+    display: none;
+}
+
+.modal > h1 {
+    font-size: 46px;
+    text-align: center;
+    margin: 50px;
+
+}
+
+.name-input {
+    width: 300px;
+    margin-left: calc(((450px - 300px - 40px) / 2));
+    padding: 10px 20px 10px 20px;
+    border-radius: 5px;
+    border: 1px solid black;
+    font-size: 16px;
+}
+
+.continue-btn {
+    width: 340px;
+    position: absolute;
+    height: 50px;
+    background: rgb(67, 67, 214);
+    margin-left: calc((450px - 340px) / 2);
+    border-radius: 10px;
+    margin-top: 30px;
+    color: white;
+    cursor: pointer;
+}
+
+.continue-btn:hover {
+    background: rgba(67, 67, 214,0.85);
+}
+
+.continue-btn > p {
+    text-align: center;
+}
+
+#gameInfo {
+    display: none;
+}
+
+#actions {
+    display: block;
+}
+
+.playerName {
+    text-align: center;
+    font-size: 21px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-top: 40px;
+    color: white;
+    margin-bottom: 0px;
+}
+.playerElo {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 300;
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+}
+
+.startAIGame {
+    padding: 10px 20px 10px 20px;
+    color: white;
+    background: rgba(0,0,0,0.35);
+    /*border: 1px solid rgb(255, 255, 255,0.4);*/
+    margin-top: 45px;
+    border-radius: 5px;
+    cursor: pointer;
+}   
+
+.account-container {
+    width: 500px;
+    background: rgba(0,0,0,0.35);
+    height: 600px;
+    left: 50%;
+    margin-left: -250px;
+    position: absolute;
+    margin-top: 50px;
+    box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.2);
+    margin-top: calc(35px - 300px);
+    top: 50%;
+    border-radius: 20px;
+}
+
+.account-container > * {
+    color: white;
+}
+
+* {
+    user-select: none;
+}
+
+.uuid-placeholder {
+    width: 60%;
+    height: 40px;
+    margin-left: 20%;
+    margin-top: 170px;
+}
+
+.uuid-placeholder > p {
+    text-align: center;
+}
+
+.equationBox {
+    width: 250px;
+    height: 150px;
+    background: rgba(0,0,0,0.455);
+    position: absolute;
+    margin-left: 675px;
+    z-index: 9;
+    margin-top: 125px;
+    border-radius: 7px;
+    display: none;
+}
+
+.leaderboard-container {
+    min-height: 100px;
+    max-height: calc(100vh - 280px);
+    overflow-y: scroll;
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+}
+
+.leaderboard-container::-webkit-scrollbar {
+    display: none;
+}
+
+
+.math {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 25px;
+    color: white;
+}
+
+.math-input {
+    width: 100px;
+    padding: 10px;
+    padding-left: 40px;
+    font-size: 14px;
+    margin-left: 50px;
+    margin-top: 10px;
+    border-radius: 5px;
+    outline: none;
+    background: rgba(0,0,0,0.25);
+    color: white;
+    border: 1px solid white;
+}
+
+.math-placeholder {
+    color: white;
+    position: absolute;
+    margin-left: 60px;
+    margin-top: 19px;
+}
+
+.math-input::placeholder {
+    color: white;
+    opacity: 1; 
+}
+
+.math-input::-ms-input-placeholder { 
+    color: white;
+}
+
+.leaderboard-row {
+    width: 800px;
+    height: 50px;
+    display: flex;
+}
+
+.leaderboard-row > div:nth-of-type(1) {
+    width: 23%;
+}
+
+.leaderboard-row > div:nth-of-type(2) {
+    width: 21%;
+}
+
+.leaderboard-row > div:nth-of-type(3) {
+    width: 23.5%;
+}
+
+.leaderboard-row > div:nth-of-type(4) {
+    width: 23%;
+}
+
+.leaderboard-row > div:nth-of-type(5) {
+    width: 9.5%;
+}
+
+.leaderboard-row > div:nth-of-type(1) > p {
+    color: white;
+    font-weight: bold;
+}
+
+.leaderboard-row > div > p {
+    color: white;
+}
+
+@media only screen and (max-width: 1050px) {
+    .playersOnline {
+        display: none;
+    }
+}
+
+#m400 {
+    margin-left: 400px;
+}
+
+@media only screen and (max-width: 850px) {
+    .icon {
+        display: none;
+    }
+
+    #m400 {
+        margin-left: 40px;
+    }
+}
+
+
+.leaveSvg {
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    margin-top: 96px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+}
+
+#messageBox {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    max-height: 250px;
+    width: 200px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+
+#messageTitle {
+    color: white;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+#message {
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    font-size: 10px;
+}
+
+#errorMessage {
+    margin-left: 55.5px;
+    margin-top: 105px;
+    color: rgb(242, 54, 54);
+}
+
+.footer {
+    width: 100vw;
+    height: 25px;
+    position: fixed;
+    bottom: 0px;
+    background: rgba(0,0,0,0.65);
+}
+
+.footer-item {
+    margin-top: 5px;
+    font-size: 12px;
+    color: rgb(236, 236, 236);
+    margin-left: 30px;
+    text-decoration: underline;
+    cursor: pointer;
+    float: left;
+}
+
+.footer-item-2 {
+    margin-top: 5px;
+    font-size: 12px;
+    color: rgb(236, 236, 236);
+    margin-right: 30px;
+    text-decoration: underline;
+    cursor: pointer;
+    float: right;
+}
+
+.newGameBox {
+    width: 300px;
+    height: 300px;
+    margin-left: 650px;
+    position: absolute;
+    background: rgba(0,0,0,0.55);
+    z-index: 9;
+    margin-top: 50px;
+    border-radius: 10px;
+    display: none;
+}
+
+.newGameBox > h2 {
+    text-align: center;
+    color: white;
+    margin-top: 80px;
+}
+
+.restartText {
+    text-align: center;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.restartBtn {
+    width: 180px;
+    margin-left: 60px;
+    background: rgba(0,0,0,0.35);
+    color: white;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+.restartBtn:hover {
+    background: rgba(0,0,0,0.55);
+}

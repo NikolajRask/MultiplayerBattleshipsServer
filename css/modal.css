@@ -1,0 +1,18 @@
+.modalTitle {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 46px;
+}
+
+.modalSmallTitle {
+    margin-left: 45px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 0px;
+}
+
+.modalText {
+    margin-left: 45px;
+    font-size: 14px;
+    margin-top: 5px;
+}
