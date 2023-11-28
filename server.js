@@ -36,8 +36,16 @@ app.get('/functions', (req, res) => {
   res.sendFile(join(__dirname, 'src/functions.js'));
 })
 
-app.get('/background.webp', (req, res) => {
-  res.sendFile(join(__dirname, 'background.webp'));
+app.get('/background1', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background.webp'));
+})
+
+app.get('/background2', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background2.png'));
+})
+
+app.get('/background3', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background3.png'));
 })
 
 app.get('/src/app.js', (req, res) => {
@@ -55,7 +63,7 @@ app.get('/src/app.js', (req, res) => {
       playersOnline--
 
       fs.readFile('./games.json', 'utf-8', (err, dataAbout) => {
-        const parsedData = JSON.parse(dataAbout)
+        const parsedData = JSON.parse(dataAbout)   
 
         for (const key in parsedData.games) {
           if (parsedData.games.hasOwnProperty(key)) {

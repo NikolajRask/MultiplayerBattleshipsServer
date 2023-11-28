@@ -1,8 +1,6 @@
 body {
     margin: 0px;
     font-family: 'Inter', sans-serif;
-    background: url('./background.webp');
-    background-size: 100vw 100vh;
 }
 
 .block {
@@ -588,6 +586,10 @@ body {
     border: 1px solid rgba(255,255,255,0.3);
     margin-top: 30px;
     cursor: pointer;
+}
+
+.flex {
+    display: flex;
 }
 
 .restartBtn:hover {

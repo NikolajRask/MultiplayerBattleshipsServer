@@ -27,8 +27,8 @@
     </div>
     <div class="footer">
         <p class="footer-item" onClick="openModal(1)">How To Play</p>
-        <p class="footer-item">Rules</p>
-        <p class="footer-item">Themes</p>
+        <p class="footer-item" onClick="openModal(2)">Rules</p>
+        <p class="footer-item"  onClick="openModal(3)">Themes</p>
         <p class="footer-item-2">Github</p>
     </div>
     <main id="page-game">
@@ -154,10 +154,34 @@
 
     <div class="overlay" id="overlay-2"></div>
     <div class="modal-2" id="modal">
-        <div id="modalContent1">
+        <div id="modalContent1" class="modalContent">
             <h1 class="modalTitle">How To Play</h1>
             <p class="modalSmallTitle">Create A Game</p>
             <p class="modalText">Create a game and receive</p>
+        </div>
+        <div id="modalContent2" class="modalContent">
+            <h1 class="modalTitle">Rules</h1>
+            <p class="modalSmallTitle">Create A Game</p>
+            <p class="modalText">Create a game and receive</p>
+        </div>
+        <div id="modalContent3" class="modalContent">
+            <h1 class="modalTitle">Themes</h1>
+            <div class="flex" style="margin-left: 50px; width: 450px;">
+                <div class="theme" style="background: url('background1');background-size: cover;" onClick="changeTheme('1')"><p>Navy 1</p></div>
+                <div class="theme" style="background: url('background2');background-size: cover;"  onClick="changeTheme('2')"><p>Sunset 1</p></div>
+            </div>
+            <div class="flex" style="margin-left: 50px; width: 450px; margin-top: 50px;">
+                <div class="theme" style="background: url('background3');background-size: cover;"  onClick="changeTheme('3')"><p>Navy 2</p></div>
+                <div class="theme" style="background: url('background4');background-size: cover;"  onClick="changeTheme('4')"></div>
+            </div>
+            <div class="flex" style="margin-left: 50px; width: 450px; margin-top: 50px;">
+                <div class="theme"  style="background: url('background5');background-size: cover;"  onClick="changeTheme('5')"></div>
+                <div class="theme"  style="background: url('background6');background-size: cover;"  onClick="changeTheme('6')"></div>
+            </div>
+            <div class="flex last" style="margin-left: 50px; width: 450px; margin-top: 50px;">
+                <div class="theme" style="background: url('background7');background-size: cover;"  onClick="changeTheme('7')"></div>
+                <div class="theme" style="background: url('background8');background-size: cover;"  onClick="changeTheme('8')"></div>
+            </div>
         </div>
     </div>
     <script src="./socket"></script>

@@ -1,3 +1,7 @@
+.modalContent {
+
+}
+
 .modalTitle {
     text-align: center;
     margin-top: 60px;
@@ -15,4 +19,56 @@
     margin-left: 45px;
     font-size: 14px;
     margin-top: 5px;
+}
+
+.modalContent {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.modalContent::-webkit-scrollbar {
+    display: none;
+}
+
+#modalContent1 {
+    display: none;
+}
+
+#modalContent2 {
+    display: none;
+}
+
+#modalContent3 {
+    display: none;
+}
+
+.theme {
+    width: 215px;
+    height: 140px;
+    background: blue;
+    border-radius: 6px;
+    opacity: 0.86;
+    transition: opacity 0.4s ease;
+    cursor: pointer;
+}
+
+.theme:hover {
+    opacity: 1;
+}
+
+.flex > .theme:nth-of-type(2) {
+    margin-left: 20px;
+}
+
+.last {
+    margin-bottom: 50px;
+}
+
+.theme > p {
+    color: black;
+    margin-top: 150px;
+    font-weight: 500;
+    text-align: center;
+
 }

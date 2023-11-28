@@ -1,15 +1,55 @@
-const board = document.getElementById('board')
+function changeTheme(theme) {
+    window.localStorage.setItem('theme', theme)
+    updateTheme()
+}      
+
+function updateTheme() {
+    document.body.style.backgroundImage = "url('./background"+localStorage.getItem('theme')+"')"
+    document.body.style.backgroundSize = "100vw 100vh"
+}
+
+if (window.localStorage.getItem('theme') == null) {
+    window.localStorage.setItem('theme', '1')
+}
+updateTheme()
+      
+updateTheme()
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const tryingToJoinGame = urlParams.get('game')
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (tryingToJoinGame != null) {
+        if (getShips().length == 20) {
+            if (notLoggedIn != false) {
+                socket.emit("joinGame", [tryingToJoinGame, getUUID(), getShips()])
+            } else {
+                gameToJoin = tryingToJoinGame;
+            }
+        } else {
+            window.location.href = "/"
+        }
+    }
+})
+
+      const board = document.getElementById('board')
         const opponentBoard = document.getElementById('opponentBoard')
         let ships = []
 
-        function openModal() {
+        function openModal(x) {
+            closeModal()
             document.getElementById('modal').style.display = "block"
             document.getElementById('overlay-2').style.display = "block"
+            document.getElementById('modalContent'+x).style.display = "block"
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = "none"
-            document.getElementById('overlay-2').style.display = "none"     
+            document.getElementById('overlay-2').style.display = "none"  
+            document.getElementById('modalContent1').style.display = "none"   
+            document.getElementById('modalContent2').style.display = "none"
+            document.getElementById('modalContent3').style.display = "none"
         }
 
         document.getElementById('overlay-2').addEventListener('click', () => {

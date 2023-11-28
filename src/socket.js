@@ -4,6 +4,8 @@ let currentAnswer;
 let attackEnabled = false;
 let name;
 
+
+
 if (localStorage.getItem('currentPage') == null) {
     localStorage.setItem('currentPage', 'game')
 }
@@ -38,6 +40,8 @@ socket.on('playersOnlineUpdate', (playerCount) => {
 })
 socket.emit('requestPlayerCount', 0)
 
+let gameToJoin;
+let notLoggedIn = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -78,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     socket.on('noUserFound', (data) => {
+        notLoggedIn = false;
         document.getElementById('accountModal').style.display = "block"
         document.getElementById('overlay').style.display = "block"
     })
@@ -128,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('player2Elo').innerHTML = data.elo1
             document.getElementById('player1Elo').innerHTML = data.elo2
         } else {
+            window.location.href = "/"
             if (parseInt(data) == 404) {
                 sendMessage("Wrong code", "No game with the code you tried to input exists!")
             } 
@@ -247,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     socket.on('userDetails', (data) => {
+        notLoggedIn = true;
         name = data.name
 
         document.getElementById('stat-wins').innerHTML = data.win
@@ -262,6 +269,18 @@ document.addEventListener('DOMContentLoaded', () => {
         createLeaderboard()
         document.getElementById('accountModal').style.display = "none"
         document.getElementById('overlay').style.display = "none"
+        notLoggedIn = true;
+        if (gameToJoin != undefined) {
+            if (getShips().length == 20) {
+                if (notLoggedIn != false) {
+                    socket.emit("joinGame", [gameToJoin, getUUID(), getShips()])
+                } else {
+                    gameToJoin = tryingToJoinGame;
+                }
+            } else {
+                window.location.href = "/"
+            }
+        }
     })
 
     socket.on('yourMovedSkipped', (data) => {
