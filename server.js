@@ -180,7 +180,6 @@ app.get('/src/app.js', (req, res) => {
             let attackedBefore = false;
 
             for (let i = 0; i < jsonData.games["game"+info[1]].moves1.length; i++) {
-              console.log(jsonData.games["game"+info[1]].moves1[i], info[0])
               if (jsonData.games["game"+info[1]].moves1[i] == parseInt(info[0])) {return}
             }
 
@@ -239,7 +238,6 @@ app.get('/src/app.js', (req, res) => {
             let attackedBefore = false;
 
             for (let i = 0; i < jsonData.games["game"+info[1]].moves2.length; i++) {
-              console.log(jsonData.games["game"+info[1]].moves2[i], info[0])
               if (jsonData.games["game"+info[1]].moves2[i] == parseInt(info[0])) {return}
             }
 
