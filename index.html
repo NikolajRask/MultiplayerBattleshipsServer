@@ -284,11 +284,11 @@
         }
 
         #gameInfo {
-            display: none;
+            display: block;
         }
 
         #actions {
-            display: block;
+            display: none;
         }
 
         .playerName {
@@ -297,6 +297,16 @@
             letter-spacing: 2px;
             font-weight: 600;
             margin-top: 40px;
+            color: white;
+            margin-bottom: 0px;
+        }
+        .playerElo {
+            text-align: center;
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 300;
+            color: rgb(221, 221, 221);
+            margin-top: 10px;
         }
 
         .startAIGame {
@@ -411,12 +421,33 @@
             color: white;
         }
 
+        @media only screen and (max-width: 1050px) {
+            .playersOnline {
+                display: none;
+            }
+        }
+
+        #m400 {
+            margin-left: 400px;
+        }
+
+        @media only screen and (max-width: 850px) {
+            .icon {
+                display: none;
+            }
+
+            #m400 {
+                margin-left: 40px;
+            }
+        }
+
+
     </style>
 </head>
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
-        <p onClick="switchPage('game')" class="nav-item" style="margin-left: 400px;">Online</p>
+        <p onClick="switchPage('game')" class="nav-item" id="m400">Online</p>
         <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
@@ -436,10 +467,12 @@
         </div>
         <div class="actions" id="gameInfo">
             <div class="actionSection" style="position: absolute;">
-                <p class="playerName" id="player1"></p>
+                <p class="playerName" id="player1">Player 1</p>
+                <p class="playerElo" id="player1Elo">950 (-25)</p>
             </div>
             <div class="actionSection" style="position: absolute;margin-left: 600px;">
-                <p class="playerName" id="player2"></p>
+                <p class="playerName" id="player2">Player 1</p>
+                <p class="playerElo" id="player2Elo">1025 (+25)</p>
             </div>
         </div>
         <div class="boards">

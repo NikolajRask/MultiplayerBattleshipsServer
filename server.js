@@ -30,10 +30,12 @@ app.get('/src/app.js', (req, res) => {
 
   io.on('connection', (socket) => {
     playersOnline++
+    console.log("+ " +socket.id)
     socket.broadcast.emit('playersOnlineUpdate', playersOnline)
     socket.emit('playersOnlineUpdate', playersOnline)
     console.log('An user connected');
     socket.on('disconnect', (e) => {
+      console.log("- "+socket.id)
       playersOnline--
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)
       console.log('An user disconnected');
@@ -105,7 +107,7 @@ app.get('/src/app.js', (req, res) => {
             const id =  Math.floor(Math.random() * 10000000)
             const d = new Date()
             fs.readFile('./users.json','utf-8', function (err2, data2) {
-              parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0, name1: JSON.parse(data2)["user"+info[0]].name, name2: ""}
+              parsedData.games["game"+ id] = {id: id, player1: info[0], player2: undefined, ongoing: false, time_played: d, ships1: info[1], ships2: [], moves1: [], moves2: [], winner: "", createdBy: info[0], turn: true, sunk1: 0, sunk2: 0, name1: JSON.parse(data2)["user"+info[0]].name, name2: "", socket1: socket.id, socket2: ''}
               fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {
                   if (err) throw err;
               })
@@ -127,8 +129,13 @@ app.get('/src/app.js', (req, res) => {
                 parsedData.games["game"+msg[0]].player2 = msg[1]
                 parsedData.games["game"+msg[0]].ongoing = true;
                 parsedData.games["game"+msg[0]].ships2 = msg[2]
+                parsedData.games["game"+msg[0]].socket2 = socket.id
                 fs.readFile('./users.json','utf-8', function (err2, data2) {
-                  parsedData.games["game"+msg[0]].name2 = JSON.parse(data2)["user"+msg[1]].name
+                  if (JSON.parse(data2)["user"+msg[1]].name != undefined) {
+                    parsedData.games["game"+msg[0]].name2 = JSON.parse(data2)["user"+msg[1]].name
+                  } else {
+                    return
+                  }
                   const rd = (Math.round(Math.random()*1))
                   if (rd == 0) {
                     parsedData.games["game"+msg[0]].turn = parsedData.games["game"+msg[0]].player1
