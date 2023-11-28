@@ -29,7 +29,7 @@
         <p class="footer-item" onClick="openModal(1)">How To Play</p>
         <p class="footer-item" onClick="openModal(2)">Rules</p>
         <p class="footer-item"  onClick="openModal(3)">Themes</p>
-        <p class="footer-item-2">Github</p>
+        <p class="footer-item-2" onClick="window.open('https://github.com/NikolajRask/MultiplayerBattleshipsServer')">Github</p>
     </div>
     <main id="page-game">
         <div class="actions" id="actions">
@@ -74,8 +74,8 @@
             </div>
             <div class="newGameBox" id="newGameBox">
                 <h2 id="winOrLose"></h2>
-                <div class="restartBtn">
-                    <p class="restartText" onClick="playAgain()">Continue</p>
+                <div class="restartBtn"  onClick="playAgain()">
+                    <p class="restartText">Continue</p>
                 </div>
             </div>
             <div id="opponentBoard" style="width: 400px; height: 400px;">
@@ -157,12 +157,36 @@
         <div id="modalContent1" class="modalContent">
             <h1 class="modalTitle">How To Play</h1>
             <p class="modalSmallTitle">Create A Game</p>
-            <p class="modalText">Create a game and receive</p>
+            <p class="modalText">Create a game and receive a game code that can be sent to another person and when the person types the code into the textfield. </p>
         </div>
         <div id="modalContent2" class="modalContent">
             <h1 class="modalTitle">Rules</h1>
-            <p class="modalSmallTitle">Create A Game</p>
-            <p class="modalText">Create a game and receive</p>
+            <p class="modalSmallTitle">Players</p>
+            <p class="modalText">2 Players play the game</p>
+            <p class="modalSmallTitle">Board</p>
+            <p class="modalText">Each player has a 10x10 grid</p>
+            <p class="modalSmallTitle">Ships</p>
+            <p class="modalText">
+                <ul>
+                    <li>1 Carrier (5 squares)</li>
+                    <li>1 Battleship (4 squares)</li>
+                    <li>1 Cruiser (3 squares)</li>
+                    <li>1 Submarine (3 squares)</li>
+                    <li>1 Destroyer (2 squares)</li>
+                </ul>
+            </p>
+            <p class="modalSmallTitle">Placement</p>
+            <p class="modalText">Each players ships is arranged randomly</p>
+            <p class="modalSmallTitle">Taking Turns</p>
+            <p class="modalText">Players take turns calling out grid coordinates to "fire" at the opponent's ships.</p>
+            <p class="modalSmallTitle">Solving Equation</p>
+            <p class="modalText">Before players can fire at their opponent they need to solve a mathematical equation. If the player solves the equation then the player is allowed to fire, but if the player fails to solve the equation, their turn gets lost.</p>
+            <p class="modalSmallTitle">Hits and Misses</p>
+            <p class="modalText">The opponent must announce whether the shot is a "hit" or a "miss."<br>
+                If a hit, the player who made the shot marks this on their tracking grid.<br>
+                If a miss, the player marks it with a different symbol to keep track.</p>
+            <p class="modalSmallTitle">Winning The Game</p>
+            <p class="modalText" style="margin-bottom: 50px;">The game ends when one player has sunk all of the opponent's ships. The first player to do so is the winner.</p>
         </div>
         <div id="modalContent3" class="modalContent">
             <h1 class="modalTitle">Themes</h1>

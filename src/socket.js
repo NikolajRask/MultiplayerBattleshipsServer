@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('player2Elo').innerHTML = data.elo1
             document.getElementById('player1Elo').innerHTML = data.elo2
         } else {
-            window.location.href = "/"
             if (parseInt(data) == 404) {
                 sendMessage("Wrong code", "No game with the code you tried to input exists!")
             } 
@@ -256,12 +255,16 @@ document.addEventListener('DOMContentLoaded', () => {
         notLoggedIn = true;
         name = data.name
 
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const tryingToJoinGame = urlParams.get('game')
         document.getElementById('stat-wins').innerHTML = data.win
         document.getElementById('stat-loses').innerHTML = data.loses
         document.getElementById('stat-elo').innerHTML = data.elo
         document.getElementById('stat-hits').innerHTML = data.hits
         document.getElementById('account-name').innerHTML = data.name
         document.getElementById('uuid-placeholder').innerHTML = "UUID-"+getUUID();
+
     })
 
     socket.on('userCreated', (data) => {
@@ -270,17 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('accountModal').style.display = "none"
         document.getElementById('overlay').style.display = "none"
         notLoggedIn = true;
-        if (gameToJoin != undefined) {
-            if (getShips().length == 20) {
-                if (notLoggedIn != false) {
-                    socket.emit("joinGame", [gameToJoin, getUUID(), getShips()])
-                } else {
-                    gameToJoin = tryingToJoinGame;
-                }
-            } else {
-                window.location.href = "/"
-            }
-        }
     })
 
     socket.on('yourMovedSkipped', (data) => {

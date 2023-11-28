@@ -1,8 +1,8 @@
 -- Need to have --
     - Test the shit out of the servers ( a lot of JSON server crashes)
+    - Fix JSON crash
 
 -- Nice to have --
-    - Add AI player
-    - Add Links to join
     - Generate 5 more themes
     - Create AI
+    - Add Chat

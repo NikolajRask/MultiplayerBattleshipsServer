@@ -19,19 +19,7 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const tryingToJoinGame = urlParams.get('game')
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (tryingToJoinGame != null) {
-        if (getShips().length == 20) {
-            if (notLoggedIn != false) {
-                socket.emit("joinGame", [tryingToJoinGame, getUUID(), getShips()])
-            } else {
-                gameToJoin = tryingToJoinGame;
-            }
-        } else {
-            window.location.href = "/"
-        }
-    }
-})
+
 
       const board = document.getElementById('board')
         const opponentBoard = document.getElementById('opponentBoard')
@@ -359,6 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const c = getRandomInt(-10, 10);
 
             const x = (c - b) / a;
+
             const equationMathML = `<math xmlns='http://www.w3.org/1998/Math/MathML'>
                 <mrow>
                     <mrow><mn>${a}</mn><mo>×</mo><mi>x</mi></mrow>
@@ -368,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <mn>${c}</mn>
                 </mrow>
             </math>`;
-            currentAnswer = x;
+            currentAnswer = 1; // x
             document.getElementById('math').innerHTML = equationMathML
             return { equationMathML, solution: x };
         }
