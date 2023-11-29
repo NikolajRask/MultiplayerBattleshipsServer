@@ -442,7 +442,7 @@ app.get('/src/app.js', (req, res) => {
 
                 jsonData.games["game"+info[1]].sunk1++;
 
-                if (jsonData.games["game"+info[1]].sunk1 >= 3) {
+                if (jsonData.games["game"+info[1]].sunk1 >= 20) {
                   socket.broadcast.emit('gameEnded', {
                     winner: jsonData.games["game"+info[1]].player1,
                     loser: jsonData.games["game"+info[1]].player2,

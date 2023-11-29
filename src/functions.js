@@ -357,7 +357,7 @@ const tryingToJoinGame = urlParams.get('game')
                     <mn>${c}</mn>
                 </mrow>
             </math>`;
-            currentAnswer = 1; // x
+            currentAnswer = x; // x
             document.getElementById('math').innerHTML = equationMathML
             return { equationMathML, solution: x };
         }
