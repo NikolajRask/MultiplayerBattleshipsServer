@@ -104,6 +104,37 @@ app.get('/background14', (req, res) => {
   res.sendFile(join(__dirname, 'themes/background14.png'));
 })
 
+app.get('/background15', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background15.png'));
+})
+
+app.get('/background16', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background16.png'));
+})
+
+app.get('/background17', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background17.png'));
+})
+
+app.get('/background18', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background18.png'));
+})
+
+app.get('/background19', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background19.png'));
+})
+
+app.get('/background20', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background20.png'));
+})
+
+app.get('/background21', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background21.png'));
+})
+
+app.get('/background22', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background22.png'));
+})
 
 
 app.get('/src/app.js', (req, res) => {
