@@ -371,6 +371,8 @@ const tryingToJoinGame = urlParams.get('game')
                 if (getCurrentGame() != undefined) {
                     chatOpen = true;
                     document.getElementById('chatBox').style.display = "block"
+                } else {
+                    sendMessage('Player Chat', "The player chat is only avaliable during a game")
                 }
                 return;
             }
