@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('userDetails', (data) => {
         notLoggedIn = true;
         name = data.name
-
+        console.log(data)
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const tryingToJoinGame = urlParams.get('game')

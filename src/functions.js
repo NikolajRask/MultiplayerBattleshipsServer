@@ -406,3 +406,14 @@ const tryingToJoinGame = urlParams.get('game')
         function clearChat() {
             document.getElementById('chats').innerHTML = ""
         }
+
+
+
+
+
+
+        
+        const playerRating = 1200; 
+        const opponentRating = 1300; 
+        const playerScore = 1;  
+        

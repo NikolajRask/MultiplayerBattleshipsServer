@@ -135,7 +135,7 @@ app.get('/src/app.js', (req, res) => {
                 if (parsedJSONData['user'+parsedData.games[key].player2] != undefined) {
                   parsedJSONData['user'+parsedData.games[key].player2].win++
                   parsedJSONData['user'+parsedData.games[key].player1].loses++
-                  parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + 25
+                  parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + cal
                   parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo - 25
                 }
 
@@ -159,8 +159,8 @@ app.get('/src/app.js', (req, res) => {
 
                 parsedJSONData['user'+parsedData.games[key].player1].win++
                 parsedJSONData['user'+parsedData.games[key].player2].loses++
-                parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo + 25
-                parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo - 25
+                parsedJSONData['user'+parsedData.games[key].player1].elo = calculateNewRating(parsedJSONData['user'+parsedData.games[key].player1].elo, parsedJSONData['user'+parsedData.games[key].player2].elo, 1);
+                parsedJSONData['user'+parsedData.games[key].player2].elo = calculateNewRating(parsedJSONData['user'+parsedData.games[key].player2].elo, parsedJSONData['user'+parsedData.games[key].player1].elo, 0);
                 parsedData.games[key] = undefined
                 fs.writeFile('./games.json', JSON.stringify(parsedData), (err) => {if (err) throw err})
                 fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
@@ -287,6 +287,14 @@ app.get('/src/app.js', (req, res) => {
               otherPlayer = jsonGames.games["game"+data.game].player1
             }
 
+            fs.readFile('./users.json', 'utf-8', (err, useData) => {
+              const JSONUserData = JSON.parse(useData)
+              JSONUserData["user"+otherPlayer].win++
+              JSONUserData["user"+data.playerResigning].loses++
+              JSONUserData["user"+otherPlayer].elo = calculateNewRating(JSONUserData["user"+otherPlayer].elo, JSONUserData["user"+data.playerResigning].elo, 1);
+              JSONUserData["user"+data.playerResigning].elo = calculateNewRating(JSONUserData["user"+data.playerResigning].elo, JSONUserData["user"+otherPlayer].elo, 0);
+              fs.writeFile('./users.json', JSON.stringify(JSONUserData), (err) => {if (err) throw err})
+            })
             socket.emit('gameResigned', {
               game: data.game,
               resigner: data.playerResigning,
@@ -295,15 +303,7 @@ app.get('/src/app.js', (req, res) => {
             socket.broadcast.emit('gameResigned', {
               game: data.game,
               resigner: data.playerResigning,
-              otherPlayer: otherPlayer 
-            })
-            fs.readFile('./users.json', 'utf-8', (err, useData) => {
-              const JSONUserData = JSON.parse(useData)
-              JSONUserData["user"+otherPlayer].win++
-              JSONUserData["user"+data.playerResigning].loses++
-              JSONUserData["user"+otherPlayer].elo = JSONUserData["user"+otherPlayer].elo + 25
-              JSONUserData["user"+data.playerResigning].elo = JSONUserData["user"+data.playerResigning].elo - 25
-              fs.writeFile('./users.json', JSON.stringify(JSONUserData), (err) => {if (err) throw err})
+              otherPlayer: otherPlayer,  
             })
             jsonGames.games["game"+data.game] = undefined
             fs.writeFile('./games.json', JSON.stringify(jsonGames), (err) => {if (err) throw err})
@@ -480,7 +480,7 @@ app.get('/src/app.js', (req, res) => {
 
                 jsonData.games["game"+info[1]].sunk1++;
 
-                if (jsonData.games["game"+info[1]].sunk1 >= 20) {
+                if (jsonData.games["game"+info[1]].sunk1 >= 1) {
                   socket.broadcast.emit('gameEnded', {
                     winner: jsonData.games["game"+info[1]].player1,
                     loser: jsonData.games["game"+info[1]].player2,
@@ -495,8 +495,8 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].loses++
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo + 25
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo - 25
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, 1);
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, 0);
                   jsonData.games["game"+info[1]] = undefined;
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
                   fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
@@ -557,8 +557,8 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].loses++
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo - 25
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo + 25
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, 1);
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, 0);
                   jsonData.games["game"+info[1]] = undefined
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
                   fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
@@ -580,6 +580,19 @@ app.get('/src/app.js', (req, res) => {
       }
     })
   });
+
+function eloRating(playerRating, opponentRating, playerScore, kFactor) {
+    const expectedScore = 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400));
+    let newRating = playerRating + kFactor * (playerScore - expectedScore);
+    newRating = Math.max(0, newRating);
+    return newRating;
+}
+
+function calculateNewRating(playerRating, opponentRating, playerScore) {
+    const kFactor = playerRating < 1500 ? 50 : (playerRating < 2000 ? 20 : 10);
+    return Math.round(eloRating(playerRating, opponentRating, playerScore, kFactor));
+}
+
 
 server.listen(3000, () => {
   console.log('server running at http://localhost:3000');
