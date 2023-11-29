@@ -135,8 +135,8 @@ app.get('/src/app.js', (req, res) => {
                 if (parsedJSONData['user'+parsedData.games[key].player2] != undefined) {
                   parsedJSONData['user'+parsedData.games[key].player2].win++
                   parsedJSONData['user'+parsedData.games[key].player1].loses++
-                  parsedJSONData['user'+parsedData.games[key].player2].elo = parsedJSONData['user'+parsedData.games[key].player2].elo + cal
-                  parsedJSONData['user'+parsedData.games[key].player1].elo = parsedJSONData['user'+parsedData.games[key].player1].elo - 25
+                  parsedJSONData['user'+parsedData.games[key].player2].elo = calculateNewRating(parsedJSONData['user'+parsedData.games[key].player2].elo, parsedJSONData['user'+parsedData.games[key].player1].elo, 1);
+                  parsedJSONData['user'+parsedData.games[key].player1].elo = calculateNewRating(parsedJSONData['user'+parsedData.games[key].player1].elo, parsedJSONData['user'+parsedData.games[key].player2].elo, 0);
                 }
 
                 parsedData.games[key] = undefined
@@ -480,7 +480,7 @@ app.get('/src/app.js', (req, res) => {
 
                 jsonData.games["game"+info[1]].sunk1++;
 
-                if (jsonData.games["game"+info[1]].sunk1 >= 1) {
+                if (jsonData.games["game"+info[1]].sunk1 >= 20) {
                   socket.broadcast.emit('gameEnded', {
                     winner: jsonData.games["game"+info[1]].player1,
                     loser: jsonData.games["game"+info[1]].player2,

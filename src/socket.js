@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('moveSuccess', (data) => {
         if (data.game == getCurrentGame()) {
             attackEnabled = false;
-            document.getElementById('oBlock-'+data.move).style.background = "rgba(0,0,0,0.4)"
+            document.getElementById('oBlock-'+data.move).style.background = "rgba(0,0,0,0.9)"
             document.getElementById('opponentBoard').style.opacity = '0.3'
         }
     })
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('hitTrue', (data) => {
         if (data[1] == getUUID()) {
-            document.getElementById("oBlock-"+data[2]).style.background = "rgba(245, 69,66, 0.4)"
+            document.getElementById("oBlock-"+data[2]).style.background = "rgba(245, 69,66, 0.9)"
             document.getElementById('opponentBoard').style.opacity = '0.3'
             generateNewEquation()
             document.getElementById('equationBox').style.display = "block"
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stat-elo').innerHTML = data.elo
         document.getElementById('stat-hits').innerHTML = data.hits
         document.getElementById('account-name').innerHTML = data.name
-        document.getElementById('uuid-placeholder').innerHTML = "UUID-"+getUUID();
+        document.getElementById('uuid-placeholder').innerHTML = "ID-"+getUUID();
 
     })
 

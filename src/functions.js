@@ -233,6 +233,7 @@ const tryingToJoinGame = urlParams.get('game')
 
             return board;
         }
+        
         let lastTimeout;
         function sendMessage(title, message, timeout=7000) {
             clearTimeout(lastTimeout)
@@ -388,12 +389,16 @@ const tryingToJoinGame = urlParams.get('game')
         document.getElementById('chat-input').addEventListener('change', () => {
             if (getCurrentGame() != undefined) {
                 if (chatTimeout == undefined) {
-                    socket.emit('playerChat', {name: name, message: document.getElementById('chat-input').value, game: getCurrentGame(), uuid: getUUID()})
-                    document.getElementById('chat-input').value = '';
-                    chatTimeout = ''
-                    setTimeout(() => {
-                        chatTimeout = undefined;
-                    },5000)
+                    if (document.getElementById('chat-input').value.trim() != '') {
+                        socket.emit('playerChat', {name: name, message: document.getElementById('chat-input').value, game: getCurrentGame(), uuid: getUUID()})
+                        document.getElementById('chat-input').value = '';
+                        chatTimeout = ''
+                        setTimeout(() => {
+                            chatTimeout = undefined;
+                        },5000)
+                    } else {
+                        document.getElementById('chat-input').value = '';
+                    }
                 } else {
                     sendMessage('Cooldown on chat', "You can only send a chat message once every 5 seconds")
                 }
