@@ -40,6 +40,10 @@ app.get('/functions', (req, res) => {
   res.sendFile(join(__dirname, 'src/functions.js'));
 })
 
+app.get('/ai', (req, res) => {
+  res.sendFile(join(__dirname, 'src/ai.js'));
+})
+
 app.get('/background1', (req, res) => {
   res.sendFile(join(__dirname, 'themes/background.webp'));
 })

@@ -30,6 +30,7 @@
         <p class="footer-item" onClick="openModal(1)">How To Play</p>
         <p class="footer-item" onClick="openModal(2)">Rules</p>
         <p class="footer-item"  onClick="openModal(3)">Themes</p>
+        <p class="footer-item">Extra Theme Package</p>
         <p class="footer-item-2" onClick="window.open('https://github.com/NikolajRask/MultiplayerBattleshipsServer')">Github</p>
     </div>
     <main id="page-game">
@@ -138,14 +139,46 @@
         </div>
     </main>
     <main id="page-ai">
-        <div style="width:1000px; position: absolute; margin-left: -500px; left: 50%;">
+        <div id="actionsAI" style="width:1000px; position: absolute; margin-left: -500px; left: 50%;">
             <div style="width:400px;margin-left: 300px;">
-                <p style="text-align: center;" class="startAIGame">Start Game</p>
+                <p style="text-align: center;" class="startAIGame" id="startGameAI">Start Game</p>
+            </div>
+        </div>
+        <div class="actions" id="gameInfoAI">
+            <div class="actionSection" style="position: absolute;">
+                <svg alt="disconnect" class="leaveSvg" onClick="disconnectAI()" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-door-exit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 12v.01" /><path d="M3 21h18" /><path d="M5 21v-16a2 2 0 0 1 2 -2h7.5m2.5 10.5v7.5" /><path d="M14 7h7m-3 -3l3 3l-3 3" /></svg>
+                <p class="playerName" id="player1AI"></p>
+                <p class="playerElo" id="player1EloAI"></p>
+            </div>
+            <div class="actionSection" style="position: absolute;margin-left: 600px;">
+                <p class="playerName" id="player2AI"></p>
+                <p class="playerElo" id="player2EloAI"></p>
             </div>
         </div>
         <div class="boards">
             <div id="ai-board" style="width: 400px; height: 400px;">
                     
+            </div>
+
+            <div class="equationBox" id="equationBoxAI">
+                <p class="math" id="mathAI">
+
+                </p>
+                <p class="math-placeholder">
+                    <math xmlns = "http://www.w3.org/1998/Math/MathML">
+                        <mrow>
+                            <mi>x</mi>
+                            <mo> = </mo>
+                         </mrow>
+                    </math>
+                </p>
+                <input class="math-input" id="math-inputAI" placeholder="">
+            </div>
+            <div class="newGameBox" id="newGameBoxAI">
+                <h2 id="winOrLoseAI"></h2>
+                <div class="restartBtn"  onClick="playAgainAI()">
+                    <p class="restartText">Play Again</p>
+                </div>
             </div>
             <div id="ai-opponentBoard" style="width: 400px; height: 400px;">
                 
@@ -197,7 +230,7 @@
             <p class="modalSmallTitle">Placement</p>
             <p class="modalText">Each players ships is arranged randomly</p>
             <p class="modalSmallTitle">Taking Turns</p>
-            <p class="modalText">Players take turns calling out grid coordinates to "fire" at the opponent's ships.</p>
+            <p class="modalText">Players take turns calling out grid coordinates to "fire" at the opponent's ships. If a player hits an opponents ship that player gets the chance to "fire" again</p>
             <p class="modalSmallTitle">Solving Equation</p>
             <p class="modalText">Before players can fire at their opponent they need to solve a mathematical equation. If the player solves the equation then the player is allowed to fire, but if the player fails to solve the equation, their turn gets lost.</p>
             <p class="modalSmallTitle">Hits and Misses</p>
@@ -242,5 +275,6 @@
     <script src="./socket"></script>
 
     <script src="./functions"></script>
+    <script src="./ai"></script>
 </body>
 </html>

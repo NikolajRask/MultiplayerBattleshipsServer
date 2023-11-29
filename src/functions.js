@@ -94,7 +94,7 @@ const tryingToJoinGame = urlParams.get('game')
                     if (!ai) {
                         row.innerHTML = row.innerHTML + `<div class='block-2' id='oBlock-${x}' onClick="attack('${x}')"></div>`
                     } else {
-                        row.innerHTML = row.innerHTML + `<div class='block-2' id='AIoBlock-${x}' onClick="attack('${x}')"></div>`
+                        row.innerHTML = row.innerHTML + `<div class='block-2' id='AIoBlock-${x}' onClick="attackAI('${x}')"></div>`
                     }
                     
                 }
@@ -233,7 +233,7 @@ const tryingToJoinGame = urlParams.get('game')
 
             return board;
         }
-        
+
         let lastTimeout;
         function sendMessage(title, message, timeout=7000) {
             clearTimeout(lastTimeout)

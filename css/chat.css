@@ -82,3 +82,6 @@
     color: white;
 }
 
+#gameInfoAI {
+    display: none;
+}

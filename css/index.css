@@ -595,3 +595,7 @@ body {
 .restartBtn:hover {
     background: rgba(0,0,0,0.55);
 }
+
+#ai-opponentBoard {
+    opacity: 0.3;
+}
