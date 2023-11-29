@@ -1,0 +1,84 @@
+.chatIcon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.3);
+    position: absolute;
+    bottom: 40px;
+    left: 30px;
+    cursor: pointer;
+}
+
+.chatIcon:hover {
+    background: rgba(0,0,0,0.45); 
+}
+
+.chatIcon > svg {
+    color: white;
+    width: 30px;
+    height: 30px;
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+.chatBox {
+    position: absolute;
+    left: 30px;
+    bottom: 120px;
+    width: 270px;
+    height: 440px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    display: none;
+    z-index: 8;
+    
+}
+
+.chatInput {
+    position: absolute;
+    bottom: 20px;
+    font-size: 16px;
+    padding: 7px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.3);
+    outline: none;
+    color: white;
+    margin-left: 20px;
+}
+
+.chatInput::placeholder {
+    color: white;
+}
+
+.chats {
+    height: 310px;
+    overflow: scroll;
+}
+
+.chats::-webkit-scrollbar {
+    display: none;
+}
+
+.chatBox > h3 {
+    margin-left: 20px;
+    color: white;
+}
+
+.chatMessage {
+    color: white;
+    font-size: 15px;
+    margin-left: 20px;
+    margin-bottom: 7px;
+    margin-top: 0px;
+    width: 230px;
+    z-index: 9;
+}
+
+.chatMessage > .chatPlayer {
+    font-weight: 700;
+    width: 230px;
+    color: white;
+}
+

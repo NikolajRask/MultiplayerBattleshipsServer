@@ -363,3 +363,44 @@ const tryingToJoinGame = urlParams.get('game')
         }
 
         generateNewEquation();
+
+        let chatOpen = false;
+
+        function toggleChat() {
+            if (chatOpen == false) {
+                if (getCurrentGame() != undefined) {
+                    chatOpen = true;
+                    document.getElementById('chatBox').style.display = "block"
+                }
+                return;
+            }
+            if (chatOpen == true) {
+                chatOpen = false;
+                document.getElementById('chatBox').style.display = "none"
+                return;
+            }
+        }
+
+        let chatTimeout = undefined;
+
+        document.getElementById('chat-input').addEventListener('change', () => {
+            if (getCurrentGame() != undefined) {
+                if (chatTimeout == undefined) {
+                    socket.emit('playerChat', {name: name, message: document.getElementById('chat-input').value, game: getCurrentGame(), uuid: getUUID()})
+                    document.getElementById('chat-input').value = '';
+                    chatTimeout = ''
+                    setTimeout(() => {
+                        chatTimeout = undefined;
+                    },5000)
+                } else {
+                    sendMessage('Cooldown on chat', "You can only send a chat message once every 5 seconds")
+                }
+                
+            } else {
+                document.getElementById('chat-input').value = '';
+            }
+        })
+
+        function clearChat() {
+            document.getElementById('chats').innerHTML = ""
+        }

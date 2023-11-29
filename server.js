@@ -24,6 +24,10 @@ app.get('/index.css', (req, res) => {
   res.sendFile(join(__dirname, 'css/index.css'));
 })
 
+app.get('/chat.css', (req, res) => {
+  res.sendFile(join(__dirname, 'css/chat.css'));
+})
+
 app.get('/modal.css', (req, res) => {
   res.sendFile(join(__dirname, 'css/modal.css'));
 })
@@ -170,6 +174,40 @@ app.get('/src/app.js', (req, res) => {
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)
       console.log('An user disconnected');
     });
+
+    socket.on('playerChat', (message) => {
+      fs.readFile('./games.json', 'utf-8', (err, games) => {
+        const gamesParsed = JSON.parse(games)
+        if (gamesParsed.games['game'+message.game] != undefined) {
+          if (gamesParsed.games['game'+message.game].player2 == message.uuid) {
+            socket.broadcast.emit('messageFromOpponent', {
+              game: message.game,
+              receiver: gamesParsed.games['game'+message.game].player1,
+              message: message.message,
+              from: message.name
+            })
+            socket.emit('messageSentToOpponent', {
+              game: message.game,
+              message: message.message,
+              from: message.name
+            })
+          }
+          if (gamesParsed.games['game'+message.game].player1 == message.uuid) {
+            socket.broadcast.emit('messageFromOpponent', {
+              game: message.game,
+              receiver: gamesParsed.games['game'+message.game].player2,
+              message: message.message,
+              from: message.name
+            })
+            socket.emit('messageSentToOpponent', {
+              game: message.game,
+              message: message.message,
+              from: message.name
+            })
+          }
+        }
+      })
+    })
 
     socket.on('requestPlayerCount', (uuid) => {
       socket.broadcast.emit('playersOnlineUpdate', playersOnline)

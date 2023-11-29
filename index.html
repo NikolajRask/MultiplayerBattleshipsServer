@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" type="text/css" href="./modal.css">
     <link rel="stylesheet" type="text/css" href="./index.css">
+    <link rel="stylesheet" type="text/css" href="./chat.css">
 </head>
 <body>
     <div class="nav">
@@ -32,6 +33,15 @@
         <p class="footer-item-2" onClick="window.open('https://github.com/NikolajRask/MultiplayerBattleshipsServer')">Github</p>
     </div>
     <main id="page-game">
+        <div class="chatBox" id="chatBox">
+            <h3>Player Chat</h3>
+            <div class="chats" id="chats">
+            </div>
+            <input id="chat-input" class="chatInput" placeholder="Message">
+        </div>
+        <div class="chatIcon" onClick="toggleChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-circle-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" /></svg>
+        </div>
         <div class="actions" id="actions">
             <div class="actionSection" style="position: absolute;">
                 <button id="createGame" class="btn">Create game</button>

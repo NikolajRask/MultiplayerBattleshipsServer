@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('player2').innerHTML = data.player1
             document.getElementById('player2Elo').innerHTML = data.elo1
             document.getElementById('player1Elo').innerHTML = data.elo2
+            clearChat();
         } else {
             if (parseInt(data) == 404) {
                 sendMessage("Wrong code", "No game with the code you tried to input exists!")
@@ -139,6 +140,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (parseInt(data) == 400) {
                 sendMessage("Tried to join own game", "You cannot join games that was created by you!")
             }
+        }
+    })
+
+    socket.on('messageFromOpponent', (message) => {
+        if (message.game == getCurrentGame()) {
+            if (message.receiver == getUUID()) {
+                sendMessage('Message', "Your opponent sent you a message")
+                document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + `
+                <p class="chatMessage">
+                    <a class="chatPlayer">${message.from}: </a>${message.message}
+                </p>
+                `
+            }
+        }
+    })
+
+    socket.on('messageSentToOpponent', (message) => {
+        if (message.game == getCurrentGame()) {
+            document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + `
+            <p class="chatMessage">
+                <a class="chatPlayer">You: </a>${message.message}
+            </p>
+            `
         }
     })
 
@@ -163,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('player2').innerHTML = data.player2
             document.getElementById('player2Elo').innerHTML = data.elo2
             document.getElementById('player1Elo').innerHTML = data.elo1
+            clearChat();
         }
     })
 
