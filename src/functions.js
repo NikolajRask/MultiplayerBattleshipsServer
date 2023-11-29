@@ -317,7 +317,6 @@ const tryingToJoinGame = urlParams.get('game')
 
         function placeShipOnBoard(i) {
             document.getElementById('block-'+i).style.background = "rgba(0,0,0,0.7)"
-            document.getElementById('AIblock-'+i).style.background = "rgba(0,0,0,0.7)"
         }
         function getShips() {
             return ships;

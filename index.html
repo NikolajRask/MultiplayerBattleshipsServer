@@ -16,7 +16,7 @@
 <body>
     <div class="nav">
         <p id="playerOnline" class="playersOnline"></p>
-        <p onClick="switchPage('game')" class="nav-item" id="m400">Online</p>
+        <p onClick="switchPage('game')" class="nav-item" id="m400">VS Friend</p>
         <p onClick="switchPage('ai')" class="nav-item">AI</p>
         <p onClick="switchPage('leaderboard')" class="nav-item">Leaderboard</p>
         <p onClick="switchPage('account')" class="nav-item">Account</p>
@@ -30,7 +30,6 @@
         <p class="footer-item" onClick="openModal(1)">How To Play</p>
         <p class="footer-item" onClick="openModal(2)">Rules</p>
         <p class="footer-item"  onClick="openModal(3)">Themes</p>
-        <p class="footer-item">Extra Theme Package</p>
         <p class="footer-item-2" onClick="window.open('https://github.com/NikolajRask/MultiplayerBattleshipsServer')">Github</p>
     </div>
     <main id="page-game">
@@ -135,6 +134,7 @@
             </div>
             <div class="uuid-placeholder">
                 <p id="uuid-placeholder"></p>
+                <p id="stats-disclaimer">These stats are only from online games.</p>
             </div>
         </div>
     </main>
@@ -187,7 +187,7 @@
     </main>
     <div class="overlay" id="overlay"></div>
     <div class="modal" id="accountModal">
-        <h1>Hey! We don't know you yet?</h1>
+        <h1>Hey! We don't know you yet</h1>
         <input placeholder="Your Nickname" id="username-input" class="name-input">
         <div onClick="createUser()" class="continue-btn">
             <p>Continue</p>
@@ -200,7 +200,7 @@
         <div id="modalContent1" class="modalContent">
             <h1 class="modalTitle">How To Play</h1>
             <p class="modalSmallTitle">Create A Game</p>
-            <p class="modalText">Create a game and receive a game code that can be sent to another person and when the person types the code into the textfield. </p>
+            <p class="modalText">Create a game and receive a game code that can be sent to another person and when the person types the code into the textfield the two player start a game. </p>
             <p class="modalSmallTitle">Join A Game</p>
             <p class="modalText">Type a code sent from another player into the code textfiled and join the atoher players game.</p>
             <p class="modalSmallTitle">Solve Equations</p>

@@ -4,6 +4,8 @@ let currentAnswerAI = undefined;
 let getToShootAI = false;
 let playerHitsAI = 0;
 let aiHits = 0;
+let aiPlayerMoves = []
+let aiMoves = []
 
 startGameAI.addEventListener('click', () => {
     if (name != undefined) {
@@ -23,11 +25,15 @@ startGameAI.addEventListener('click', () => {
         document.getElementById('player2AI').innerHTML = "Computer";
         document.getElementById('player2EloAI').innerHTML = "???"
         document.getElementById('ai-opponentBoard').style.opacity = "0.3"
+        let aiPlayerMoves = []
+        let aiMoves = []
     }
 })
 
 
 function playAgainAI() {
+    playerHitsAI = 0;
+    aiHits = 0;
     startGameAI.style.display = "none"
     equationBoxAI.style.display = "block"
     generateNewEquationAI()
@@ -45,18 +51,42 @@ function playAgainAI() {
     document.getElementById('player2EloAI').innerHTML = "???"
     document.getElementById('ai-opponentBoard').style.opacity = "0.3"
     document.getElementById('newGameBoxAI').style.display = "none"
+    clearBoardsAI()
+    aiPlayerMoves = []
+    aiMoves = []
+    for (let i = 0; i < ships.length; i++) {
+        placeShipOnBoardAI(ships[i])
+    }
 }
 
-function disconnectAI() {
-    document.getElementById('player1AI').style.color = "red"
-    document.getElementById('player1EloAI').style.color = "red"
-    document.getElementById('player2AI').style.color = "green"
-    document.getElementById('player2EloAI').style.color = "green"
-
-    document.getElementById('player1EloAI').innerHTML = "Loser"
-    document.getElementById('player2EloAI').innerHTML = "Winner"
+function disconnectAI(x = true) {
+    currentAnswerAI = undefined;
+    getToShootAI = false;
+    playerHitsAI = 0;
+    aiHits = 0;
+    aiPlayerMoves = []
+    aiMoves = []
+    if (x == true) {
+        document.getElementById('player1AI').style.color = "red"
+        document.getElementById('player1EloAI').style.color = "red"
+        document.getElementById('player2AI').style.color = "green"
+        document.getElementById('player2EloAI').style.color = "green"
+    
+        document.getElementById('player1EloAI').innerHTML = "Loser"
+        document.getElementById('player2EloAI').innerHTML = "Winner"
+        document.getElementById('winOrLoseAI').innerHTML = "You Lost"
+    } else {
+        document.getElementById('player1AI').style.color = "green"
+        document.getElementById('player1EloAI').style.color = "green"
+        document.getElementById('player2AI').style.color = "red"
+        document.getElementById('player2EloAI').style.color = "red"
+    
+        document.getElementById('player1EloAI').innerHTML = "Winner"
+        document.getElementById('player2EloAI').innerHTML = "Loser"
+        document.getElementById('winOrLoseAI').innerHTML = "You Won"
+    }
     document.getElementById('newGameBoxAI').style.display = "block"
-    document.getElementById('winOrLoseAI').innerHTML = "You Lost"
+    
     equationBoxAI.style.display = "none"
 }
 
@@ -85,9 +115,15 @@ function generateNewEquationAI() {
     return { equationMathML, solution: x };
 }
 
+// Cheat Mode In AI
+document.getElementById('math-inputAI').addEventListener('input', () => {
+    if (document.getElementById('math-inputAI').value == "qq") {document.getElementById('math-inputAI').value = currentAnswerAI.toFixed(1)}
+})
+
 document.getElementById('math-inputAI').addEventListener('change', () => {
-    const saveValue = document.getElementById('math-inputAI').value
+    let saveValue = document.getElementById('math-inputAI').value
     document.getElementById('math-inputAI').value = "";
+    
     if (parseFloat(saveValue).toFixed(1) == currentAnswerAI.toFixed(1)) {
         sendMessage('Correct Answer', "You can shoot at your opponent now")
         document.getElementById('ai-opponentBoard').style.opacity = "1"
@@ -102,6 +138,13 @@ document.getElementById('math-inputAI').addEventListener('change', () => {
 
 function attackAI(x) {
     if (getToShootAI) {
+        for (let i = 0; i < aiPlayerMoves.length; i++) {
+            if (aiPlayerMoves[i] == x) {
+                return;
+            }
+        }
+
+        aiPlayerMoves.push(x)
         getToShootAI = false;
         let hit = false;
         for (let i = 0; i < AIShips.length; i++) {
@@ -114,7 +157,7 @@ function attackAI(x) {
             equationBoxAI.style.display = "block"
             playerHitsAI++
             if (playerHitsAI >= 20) {
-                //win game
+                disconnectAI(false)
             }
             generateNewEquationAI()
             
@@ -123,12 +166,27 @@ function attackAI(x) {
             sendMessage('You Missed', "You did not hit any of your opponents ships")
             equationBoxAI.style.display = "none"
             makeAIMove()
+            generateNewEquationAI()
         }
     }
 }
 
-function clearBoards() {
+function clearBoardsAI() {
+    for (let i = 0; i < 100; i++) {
+        document.getElementById('AIoBlock-'+(i+1)).style.background = "rgba(255,255,255,0.15)"
+        document.getElementById('AIblock-'+(i+1)).style.background = ""
+    }
+    for (let i = 0; i < ships.length; i++) {
+        placeShipOnBoard(ships[i])
+    }
+}
 
+function placeShipOnBoardAI(i) {
+    document.getElementById('AIblock-'+i).style.background = "rgba(0,0,0,0.7)"
+}
+
+for (let i = 0; i < ships.length; i++) {
+    placeShipOnBoardAI(ships[i])
 }
 
 function createBoardWithShipsAI() {
@@ -174,10 +232,27 @@ for (let i = 0; i < AIBoard.length; i++) {
 
 
 
-
+let lastHitAI 
 
 function makeAIMove() {
-    const move = Math.floor(Math.random() * 100) + 1;
+    let isMoveValid = false;
+    let move;
+
+    while (!isMoveValid) {
+        move = Math.floor(Math.random() * 100) + 1;
+        let attackBeforeAI = false;
+
+        for (let i = 0; i < aiMoves.length; i++) {
+            if (aiMoves[i] == move) {
+                attackBeforeAI = true;
+            }
+        }
+
+        if (attackBeforeAI == false) {
+            isMoveValid = true;
+        }
+    }
+    aiMoves.push(move)
 
     let isHit = false;
     for (let i = 0; i < ships.length; i++) {
@@ -190,7 +265,8 @@ function makeAIMove() {
             document.getElementById('AIblock-'+move).style.background = 'rgba(245, 69,66, 0.6)'
             aiHits++
             if (aiHits >= 20) {
-                //win game
+                disconnectAI()
+                return;
             }
             makeAIMove()
         } else {
