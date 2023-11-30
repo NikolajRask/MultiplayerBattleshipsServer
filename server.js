@@ -136,6 +136,14 @@ app.get('/background22', (req, res) => {
   res.sendFile(join(__dirname, 'themes/background22.png'));
 })
 
+app.get('/background23', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background23.png'));
+})
+
+app.get('/background24', (req, res) => {
+  res.sendFile(join(__dirname, 'themes/background24.png'));
+})
+
 
 app.get('/src/app.js', (req, res) => {
     res.sendFile(join(__dirname, 'app.js'));
