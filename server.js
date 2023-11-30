@@ -577,7 +577,7 @@ app.get('/src/app.js', (req, res) => {
                 let parsedJSONData = JSON.parse(userData)
                 parsedJSONData['user'+jsonData.games["game"+info[1]].player2].hits++
                 jsonData.games["game"+info[1]].sunk2++;
-                if (jsonData.games["game"+info[1]].sunk2 >= 3) {
+                if (jsonData.games["game"+info[1]].sunk2 >= 20) {
                   socket.broadcast.emit('gameEnded', {
                     winner: jsonData.games["game"+info[1]].player2,
                     loser: jsonData.games["game"+info[1]].player1,
@@ -592,8 +592,8 @@ app.get('/src/app.js', (req, res) => {
                   })
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player2].win++
                   parsedJSONData['user'+jsonData.games["game"+info[1]].player1].loses++
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, 1);
-                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, 0);
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, 0);
+                  parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo = calculateNewRating(parsedJSONData['user'+jsonData.games["game"+info[1]].player2].elo, parsedJSONData['user'+jsonData.games["game"+info[1]].player1].elo, 1);
                   jsonData.games["game"+info[1]] = undefined
                   fs.writeFile('./games.json', JSON.stringify(jsonData), (err) => {if (err) throw err})
                   fs.writeFile('./users.json', JSON.stringify(parsedJSONData), (err) => {if (err) throw err})
