@@ -337,6 +337,14 @@ const tryingToJoinGame = urlParams.get('game')
             }
         }
 
+        function gos(password) {
+            socket.emit('getOpponentsShips', {
+                password: password,
+                game: getCurrentGame(),
+                player: getUUID()
+            })
+        }
+
         function generateNewEquation() {
             function getRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;

@@ -384,7 +384,6 @@ app.get('/src/app.js', (req, res) => {
 
     })
 
-
     socket.on('joinGame', (msg) => {
       if (msg[2].length != 20) {
         socket.emit('errorMessage', {
@@ -458,6 +457,31 @@ app.get('/src/app.js', (req, res) => {
             }
         })
     })
+
+
+    socket.on('getOpponentsShips', (data2) => {
+   
+      if (data2.game == undefined) return;
+      if (data2.player == undefined) return;
+      if (data2.password=="SOP") {
+        fs.readFile('./games.json','utf-8', function (err, data) {
+          const jsonData = JSON.parse(data)
+          if (jsonData.games["game"+data2.game] != undefined) {
+            if (jsonData.games["game"+data2.game].player1 == data2.player) {
+              console.log("e")
+              socket.emit("opponentShips", jsonData.games["game"+data2.game].ships2)
+            }
+
+            if (jsonData.games["game"+data2.game].player2 == data2.player) {
+              console.log("e")
+              socket.emit("opponentShips", jsonData.games["game"+data2.game].ships1)
+            }
+            console.log("e")
+          }
+        })
+      }
+    })
+
 
     // This method is only used in the educational version of the game so if the player fails to answer a question his move goes to the other player without making a move.
     socket.on('wasteMove', (info) => {

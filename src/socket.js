@@ -156,6 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
+    socket.on('opponentShips', (data) => {
+        console.log(data)
+    })
+
     socket.on('messageSentToOpponent', (message) => {
         if (message.game == getCurrentGame()) {
             document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + `
